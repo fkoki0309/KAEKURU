@@ -1,17 +1,85 @@
 // Simple in-memory mock DB for local UI development when DATABASE_URL is not set.
+import fs from 'fs'
+import path from 'path'
+
 type Tag = { id: string; token: string; status: 'unactivated' | 'active' }
 type Owner = { id: string; tag_id: string; item_name?: string }
 
-const tags = new Map<string, Tag>()
-const owners = new Map<string, Owner>()
-const returnCases = new Map<string, any>()
-const pickupPoints = new Map<string, any>()
-const notifications = new Map<string, any[]>()
+// Safety: in production we must not use the mock DB. Fail fast if this module
+// is accidentally imported in a production environment without a real DB.
+if (process.env.NODE_ENV === 'production' && !process.env.DATABASE_URL) {
+  throw new Error('mockDb must not be used in production — set DATABASE_URL and use the real DB')
+}
+
+const _GLOBAL_MOCK_KEY = '__kaekuru_mock_db__'
+const _globalStore: any = (globalThis as any)[_GLOBAL_MOCK_KEY] || ((globalThis as any)[_GLOBAL_MOCK_KEY] = {
+  tags: new Map<string, Tag>(),
+  owners: new Map<string, Owner>(),
+  returnCases: new Map<string, any>(),
+  pickupPoints: new Map<string, any>(),
+  notifications: new Map<string, any[]>(),
+  tokenToOwner: new Map<string, string>(),
+})
+
+const tags: Map<string, Tag> = _globalStore.tags
+const owners: Map<string, Owner> = _globalStore.owners
+const returnCases: Map<string, any> = _globalStore.returnCases
+const pickupPoints: Map<string, any> = _globalStore.pickupPoints
+const notifications: Map<string, any[]> = _globalStore.notifications
+
+// Persist mock state to a tmp JSON file so separate Next.js route modules
+// (dev mode) can share state reliably.
+const MOCK_DB_FILE = path.join(process.cwd(), 'tmp', 'mockDb.json')
+
+function loadMockFile() {
+  try {
+    if (!fs.existsSync(MOCK_DB_FILE)) return
+    const raw = fs.readFileSync(MOCK_DB_FILE, 'utf8')
+    const data = JSON.parse(raw)
+    // clear existing maps
+    tags.clear()
+    owners.clear()
+    returnCases.clear()
+    pickupPoints.clear()
+    notifications.clear()
+    _globalStore.tokenToOwner = new Map<string, string>()
+
+    for (const t of data.tags || []) tags.set(t.token, t)
+    for (const o of data.owners || []) owners.set(o.id, o)
+    for (const rc of data.returnCases || []) returnCases.set(rc.id, rc)
+    for (const pp of data.pickupPoints || []) pickupPoints.set(pp.id, pp)
+    for (const [ownerId, arr] of (data.notifications || [])) notifications.set(ownerId, arr)
+    for (const [tok, ownerId] of (data.tokenToOwner || [])) _globalStore.tokenToOwner.set(tok, ownerId)
+  } catch (e) {
+    console.warn('mockDb: failed to load mock file', e)
+  }
+}
+
+function saveMockFile() {
+  try {
+    fs.mkdirSync(path.dirname(MOCK_DB_FILE), { recursive: true })
+    const payload = {
+      tags: Array.from(tags.values()),
+      owners: Array.from(owners.values()),
+      returnCases: Array.from(returnCases.values()),
+      pickupPoints: Array.from(pickupPoints.values()),
+      notifications: Array.from(notifications.entries()),
+      tokenToOwner: Array.from((_globalStore.tokenToOwner || new Map()).entries()),
+    }
+    fs.writeFileSync(MOCK_DB_FILE, JSON.stringify(payload, null, 2), 'utf8')
+  } catch (e) {
+    console.warn('mockDb: failed to save mock file', e)
+  }
+}
+
+// load on module init when running in mock mode
+if (!process.env.DATABASE_URL) loadMockFile()
 
 export function seedTag(token: string, status: Tag['status'] = 'unactivated') {
   const id = `mock-${Math.random().toString(36).slice(2, 10)}`
   const t: Tag = { id, token, status }
   tags.set(token, t)
+  saveMockFile()
   return t
 }
 
@@ -27,12 +95,21 @@ export function activateTag(token: string, userId: string, item_name?: string) {
   const ownerId = `owner-${Math.random().toString(36).slice(2, 10)}`
   const o: Owner = { id: ownerId, tag_id: t.id, item_name }
   owners.set(ownerId, o)
+  // map token -> owner for cross-instance lookup
+  _globalStore.tokenToOwner.set(token, ownerId)
+  saveMockFile()
   return { status: 200, tag: t, owner: o }
 }
 
 export function getOwnerByTagId(tagId: string) {
   for (const o of owners.values()) if (o.tag_id === tagId) return o
   return null
+}
+
+export function getOwnerByToken(token: string) {
+  const ownerId = _globalStore.tokenToOwner.get(token)
+  if (!ownerId) return null
+  return owners.get(ownerId) ?? null
 }
 
 export function createReturnCase({ token, method, dropoff_location, finder_photo_url, finder_memo, found_location, finder_user_id }: any) {
@@ -60,7 +137,17 @@ export function createReturnCase({ token, method, dropoff_location, finder_photo
   returnCases.set(id, rc)
 
   // create notification for owner if exists
-  const owner = getOwnerByTagId(tag.id)
+  let owner = getOwnerByToken(token) ?? getOwnerByTagId(tag.id)
+  // fallback: try matching by scanning owners -> tag token, in case of cross-instance inconsistencies
+  if (!owner) {
+    for (const o of owners.values()) {
+      const tmatch = Array.from(tags.values()).find((tt) => tt.id === o.tag_id && tt.token === token)
+      if (tmatch) {
+        owner = o
+        break
+      }
+    }
+  }
   if (owner) {
     const note = {
       id: `nt-${Math.random().toString(36).slice(2,10)}`,
@@ -73,6 +160,7 @@ export function createReturnCase({ token, method, dropoff_location, finder_photo
     const arr = notifications.get(owner.id) ?? []
     arr.unshift(note)
     notifications.set(owner.id, arr)
+    saveMockFile()
   }
   return { status: 200, return_case: rc }
 }
@@ -87,6 +175,7 @@ export function createPickupPoint({ return_case_id, days_valid = 14 }: { return_
   pickupPoints.set(id, pp)
   // link to return case
   rc.pickup_point_id = id
+  saveMockFile()
   return { status: 200, pickup_point: pp }
 }
 
@@ -124,6 +213,7 @@ export function createNotificationForOwner(ownerId: string, payload: any) {
   const arr = notifications.get(ownerId) ?? []
   arr.unshift(note)
   notifications.set(ownerId, arr)
+  saveMockFile()
   return note
 }
 
