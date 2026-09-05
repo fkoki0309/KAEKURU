@@ -179,6 +179,25 @@ export function createPickupPoint({ return_case_id, days_valid = 14 }: { return_
   return { status: 200, pickup_point: pp }
 }
 
+// Owner-managed pickup point (pre-registered by owner for局留め等)
+export function createOwnerPickupPoint({ owner_id, carrier, facility_name, facility_address, recipient_name }: any) {
+  if (!owners.has(owner_id)) return { status: 404 }
+  const id = `opp-${Math.random().toString(36).slice(2, 10)}`
+  const pp = { id, owner_id, carrier, facility_name, facility_address, recipient_name, created_at: new Date().toISOString() }
+  // store in pickupPoints map
+  pickupPoints.set(id, pp)
+  saveMockFile()
+  return { status: 200, pickup_point: pp }
+}
+
+export function listOwnerPickupPoints(ownerId: string) {
+  const out: any[] = []
+  for (const pp of pickupPoints.values()) {
+    if ((pp as any).owner_id === ownerId) out.push(pp)
+  }
+  return out
+}
+
 export function getPickupPointById(id: string) {
   return pickupPoints.get(id) ?? null
 }
