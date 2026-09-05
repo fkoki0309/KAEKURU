@@ -18,12 +18,19 @@ cp .env.example .env
 ```bash
 npx prisma generate
 npx prisma migrate dev --name init
-```
-
-4. 開発サーバ起動
-
-```bash
+npx prisma studio        # データ確認
 npm run dev
 ```
 
 注意: 本リポジトリは Supabase を想定した設計です。認証は Supabase Auth で実装する予定です。
+
+Mock モード
+- `DATABASE_URL` が設定されていない場合、サーバは簡易モック実装を使って動作します。
+- 既定で `demo-token-123`（未登録）と `demo-token-activated`（登録済み）をシードしています。
+- モック確認例:
+
+```bash
+curl http://localhost:3000/a/demo-token-123
+curl -X POST http://localhost:3000/api/tags/activate -H "Content-Type: application/json" -H "x-sample-user-id: mock-user" -d '{"token":"demo-token-123","item_name":"My Mug"}'
+```
+

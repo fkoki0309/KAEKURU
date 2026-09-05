@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 // NOTE: This is a sample implementation. Adapt to your auth and DB setup.
 import { prisma } from '@/lib/prisma' // assume prisma client is exposed
+import * as mockDb from '@/lib/mockDb'
 
 export async function POST(request: Request) {
   try {
@@ -12,6 +13,14 @@ export async function POST(request: Request) {
     if (!userId) return NextResponse.json({ error: 'unauthenticated' }, { status: 401 })
 
     if (!token) return NextResponse.json({ error: 'token required' }, { status: 400 })
+
+    // If DATABASE_URL is not set, use in-memory mock DB for local dev
+    if (!process.env.DATABASE_URL) {
+      const res = mockDb.activateTag(token, userId, item_name)
+      if (res.status === 404) return NextResponse.json({ error: 'not found' }, { status: 404 })
+      if (res.status === 409) return NextResponse.json({ error: 'already activated' }, { status: 409 })
+      return NextResponse.json({ ok: true, tag: res.tag, owner: res.owner })
+    }
 
     // Transaction: check tag status and create owner relation atomically
     const result = await prisma.$transaction(async (tx) => {
