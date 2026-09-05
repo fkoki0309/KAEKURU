@@ -1,0 +1,84 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id    String  @id @default(uuid())
+  email String? @unique
+  // Other fields managed by Supabase/Auth
+  tagOwners TagOwner[] @relation("user_tag_owners")
+}
+
+model Tag {
+  id          String   @id @default(uuid())
+  token       String   @unique
+  status      String   @default("unactivated")
+  lot_id      String?
+  sales_channel String?
+  created_at  DateTime @default(now())
+  owners      TagOwner[]
+  returnCases ReturnCase[]
+  @@map("tags")
+}
+
+model TagOwner {
+  id            String   @id @default(uuid())
+  tag_id        String
+  user_id       String?
+  item_name     String?
+  item_photo_url String?
+  activated_at  DateTime?
+  unlinked_at   DateTime?
+
+  tag Tag @relation(fields: [tag_id], references: [id])
+  user User? @relation(fields: [user_id], references: [id], name: "user_tag_owners")
+  @@map("tag_owners")
+}
+
+model OwnerPickupPoint {
+  id             String   @id @default(uuid())
+  user_id        String
+  carrier        String?
+  facility_name  String?
+  facility_address String?
+  recipient_name String?
+  created_at     DateTime @default(now())
+  returnCases    ReturnCase[]
+  @@map("owner_pickup_points")
+}
+
+model ReturnCase {
+  id              String   @id @default(uuid())
+  tag_id          String
+  method          String?
+  dropoff_location String?
+  pickup_point_id String?
+  case_code       String?  @unique
+  finder_photo_url String?
+  finder_memo     String?
+  found_location  String?
+  finder_user_id  String?
+  status          String   @default("submitted")
+  shipped_at      DateTime?
+  received_at     DateTime?
+  expires_at      DateTime?
+  created_at      DateTime @default(now())
+
+  tag Tag @relation(fields: [tag_id], references: [id])
+  @@map("return_cases")
+}
+
+model Reward {
+  id             String   @id @default(uuid())
+  return_case_id String
+  amount         Int      @default(1000)
+  status         String   @default("pending")
+  paid_at        DateTime?
+
+  @@map("rewards")
+}
