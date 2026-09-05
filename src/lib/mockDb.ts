@@ -6,6 +6,7 @@ const tags = new Map<string, Tag>()
 const owners = new Map<string, Owner>()
 const returnCases = new Map<string, any>()
 const pickupPoints = new Map<string, any>()
+const notifications = new Map<string, any[]>()
 
 export function seedTag(token: string, status: Tag['status'] = 'unactivated') {
   const id = `mock-${Math.random().toString(36).slice(2, 10)}`
@@ -57,6 +58,22 @@ export function createReturnCase({ token, method, dropoff_location, finder_photo
     created_at: new Date().toISOString(),
   }
   returnCases.set(id, rc)
+
+  // create notification for owner if exists
+  const owner = getOwnerByTagId(tag.id)
+  if (owner) {
+    const note = {
+      id: `nt-${Math.random().toString(36).slice(2,10)}`,
+      owner_id: owner.id,
+      return_case_id: id,
+      message: `Your item (${owner.item_name ?? '不明'}) was reported found (case ${case_code}).`,
+      read: false,
+      created_at: new Date().toISOString(),
+    }
+    const arr = notifications.get(owner.id) ?? []
+    arr.unshift(note)
+    notifications.set(owner.id, arr)
+  }
   return { status: 200, return_case: rc }
 }
 
@@ -77,8 +94,41 @@ export function getPickupPointById(id: string) {
   return pickupPoints.get(id) ?? null
 }
 
+// Helper list functions for debug endpoint
+export function listTags() {
+  return Array.from(tags.values())
+}
+export function listOwners() {
+  return Array.from(owners.values())
+}
+export function listReturnCases() {
+  return Array.from(returnCases.values())
+}
+export function listPickupPoints() {
+  return Array.from(pickupPoints.values())
+}
+export function listNotifications() {
+  const out: any[] = []
+  for (const [ownerId, arr] of notifications.entries()) {
+    out.push({ ownerId, notifications: arr })
+  }
+  return out
+}
+
 export function getReturnCaseById(id: string) {
   return returnCases.get(id) ?? null
+}
+
+export function createNotificationForOwner(ownerId: string, payload: any) {
+  const note = { id: `nt-${Math.random().toString(36).slice(2,10)}`, owner_id: ownerId, ...payload, read: false, created_at: new Date().toISOString() }
+  const arr = notifications.get(ownerId) ?? []
+  arr.unshift(note)
+  notifications.set(ownerId, arr)
+  return note
+}
+
+export function getNotificationsForOwner(ownerId: string) {
+  return (notifications.get(ownerId) ?? []).slice()
 }
 
 // seed a demo tag on module load for convenience
