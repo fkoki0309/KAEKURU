@@ -118,6 +118,18 @@ export function seedTag(token: string, status: Tag['status'] = 'unactivated') {
     return out
   }
 
+  export function linkFinderToReturnCase(return_case_id: string, finder: { name?: string, email?: string, phone?: string, finder_user_id?: string }) {
+    const rc = returnCases.get(return_case_id)
+    if (!rc) return { status: 404 }
+    // If already linked, return conflict
+    if (rc.finder_user_id) return { status: 409, message: 'already linked', return_case: rc }
+    rc.finder_user_id = finder.finder_user_id ?? null
+    rc.finder_info = { name: finder.name ?? null, email: finder.email ?? null, phone: finder.phone ?? null }
+    returnCases.set(return_case_id, rc)
+    saveMockFile()
+    return { status: 200, return_case: rc }
+  }
+
 export function getTagByToken(token: string) {
   return tags.get(token) ?? null
 }
