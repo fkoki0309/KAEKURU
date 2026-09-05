@@ -18,6 +18,7 @@ const _globalStore: any = (globalThis as any)[_GLOBAL_MOCK_KEY] || ((globalThis 
   returnCases: new Map<string, any>(),
   pickupPoints: new Map<string, any>(),
   notifications: new Map<string, any[]>(),
+  rewards: new Map<string, any>(),
   tokenToOwner: new Map<string, string>(),
 })
 
@@ -26,6 +27,7 @@ const owners: Map<string, Owner> = _globalStore.owners
 const returnCases: Map<string, any> = _globalStore.returnCases
 const pickupPoints: Map<string, any> = _globalStore.pickupPoints
 const notifications: Map<string, any[]> = _globalStore.notifications
+const rewards: Map<string, any> = _globalStore.rewards
 
 // Persist mock state to a tmp JSON file so separate Next.js route modules
 // (dev mode) can share state reliably.
@@ -49,6 +51,7 @@ function loadMockFile() {
     for (const rc of data.returnCases || []) returnCases.set(rc.id, rc)
     for (const pp of data.pickupPoints || []) pickupPoints.set(pp.id, pp)
     for (const [ownerId, arr] of (data.notifications || [])) notifications.set(ownerId, arr)
+    for (const r of (data.rewards || [])) rewards.set(r.id, r)
     for (const [tok, ownerId] of (data.tokenToOwner || [])) _globalStore.tokenToOwner.set(tok, ownerId)
   } catch (e) {
     console.warn('mockDb: failed to load mock file', e)
@@ -56,7 +59,7 @@ function loadMockFile() {
 }
 
 function saveMockFile() {
-  try {
+    // create notification for owner if exists
     fs.mkdirSync(path.dirname(MOCK_DB_FILE), { recursive: true })
     const payload = {
       tags: Array.from(tags.values()),
@@ -64,6 +67,7 @@ function saveMockFile() {
       returnCases: Array.from(returnCases.values()),
       pickupPoints: Array.from(pickupPoints.values()),
       notifications: Array.from(notifications.entries()),
+      rewards: Array.from(rewards.values()),
       tokenToOwner: Array.from((_globalStore.tokenToOwner || new Map()).entries()),
     }
     fs.writeFileSync(MOCK_DB_FILE, JSON.stringify(payload, null, 2), 'utf8')
@@ -79,9 +83,40 @@ export function seedTag(token: string, status: Tag['status'] = 'unactivated') {
   const id = `mock-${Math.random().toString(36).slice(2, 10)}`
   const t: Tag = { id, token, status }
   tags.set(token, t)
+      saveMockFile()
   saveMockFile()
   return t
 }
+
+  export function createRewardForReturnCase(return_case_id: string, amount: number = 1000) {
+    const rc = returnCases.get(return_case_id)
+    if (!rc) return { status: 404 }
+    // find owner by tag id
+    const tagId = rc.tag_id
+    const owner = getOwnerByTagId(tagId)
+    if (!owner) return { status: 404 }
+    const id = `rw-${Math.random().toString(36).slice(2, 10)}`
+    const reward = { id, return_case_id, owner_id: owner.id, amount: amount || 0, status: 'pending', created_at: new Date().toISOString(), paid_at: null }
+    rewards.set(id, reward)
+    saveMockFile()
+    return { status: 200, reward }
+  }
+
+  export function markRewardPaid(rewardId: string) {
+    const r = rewards.get(rewardId)
+    if (!r) return { status: 404 }
+    r.status = 'paid'
+    r.paid_at = new Date().toISOString()
+    rewards.set(rewardId, r)
+    saveMockFile()
+    return { status: 200, reward: r }
+  }
+
+  export function listRewardsForOwner(ownerId: string) {
+    const out: any[] = []
+    for (const r of rewards.values()) if (r.owner_id === ownerId) out.push(r)
+    return out
+  }
 
 export function getTagByToken(token: string) {
   return tags.get(token) ?? null
