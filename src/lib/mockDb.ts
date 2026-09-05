@@ -134,6 +134,38 @@ export function getTagByToken(token: string) {
   return tags.get(token) ?? null
 }
 
+export function runExpiryAlerts() {
+  const now = Date.now()
+  const alerted: any[] = []
+  for (const rc of returnCases.values()) {
+    if (!rc.expires_at) continue
+    const exp = new Date(rc.expires_at).getTime()
+    if (exp <= now && !rc.expires_alerted) {
+      // mark alerted
+      rc.expires_alerted = true
+      returnCases.set(rc.id, rc)
+      // notify owner
+      const owner = getOwnerByTagId(rc.tag_id)
+      const msg = {
+        id: `nt-${Math.random().toString(36).slice(2,10)}`,
+        owner_id: owner?.id ?? null,
+        return_case_id: rc.id,
+        message: `局留め期限が到来しました（ケース ${rc.case_code || rc.id}）。`,
+        read: false,
+        created_at: new Date().toISOString(),
+      }
+      if (owner) {
+        const arr = notifications.get(owner.id) ?? []
+        arr.unshift(msg)
+        notifications.set(owner.id, arr)
+      }
+      alerted.push({ return_case_id: rc.id, owner_id: owner?.id ?? null })
+    }
+  }
+  saveMockFile()
+  return alerted
+}
+
 export function activateTag(token: string, userId: string, item_name?: string) {
   const t = tags.get(token)
   if (!t) return { status: 404 }
