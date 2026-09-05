@@ -59,7 +59,7 @@ function loadMockFile() {
 }
 
 function saveMockFile() {
-    // create notification for owner if exists
+  try {
     fs.mkdirSync(path.dirname(MOCK_DB_FILE), { recursive: true })
     const payload = {
       tags: Array.from(tags.values()),
