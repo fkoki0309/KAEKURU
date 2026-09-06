@@ -1,6 +1,6 @@
 "use client"
 import React, { useEffect, useState } from 'react'
-import { useParams } from 'next/navigation'
+import { useParams, useRouter } from 'next/navigation'
 import Screen from '../../../_components/Screen'
 
 type Confirmed = { hasReward: boolean }
@@ -8,6 +8,7 @@ type Confirmed = { hasReward: boolean }
 export default function OwnerNotificationsPage() {
   const params = useParams() as { ownerId?: string }
   const ownerId = params?.ownerId
+  const router = useRouter()
   const [notes, setNotes] = useState<any[] | null>(null)
   const [loading, setLoading] = useState(false)
   const [err, setErr] = useState<string | null>(null)
@@ -32,7 +33,13 @@ export default function OwnerNotificationsPage() {
     try {
       const res = await fetch(`/api/return-cases/${rcId}/confirm`, { method: 'POST' })
       const j = await res.json().catch(() => ({}))
-      if (j.ok) setConfirmed((c) => ({ ...c, [rcId]: { hasReward: !!j.reward } }))
+      if (!j.ok) return
+      setConfirmed((c) => ({ ...c, [rcId]: { hasReward: !!j.reward } }))
+      if (j.reward) {
+        // 報酬が用意されたら報酬ページへ
+        router.push(`/owner/${ownerId}/rewards`)
+        router.refresh()
+      }
     } finally {
       setConfirming(null)
     }
