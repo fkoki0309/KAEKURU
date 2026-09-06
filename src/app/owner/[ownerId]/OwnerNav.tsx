@@ -1,4 +1,5 @@
 'use client'
+import React from 'react'
 import { useRouter } from 'next/navigation'
 
 export default function OwnerNav({ ownerId, itemName }: { ownerId: string; itemName: string | null }) {
@@ -10,33 +11,16 @@ export default function OwnerNav({ ownerId, itemName }: { ownerId: string; itemN
     router.refresh()
   }
 
-  const linkStyle = { fontSize: 13, color: '#0366d6', textDecoration: 'none' }
-
   return (
-    <header
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: 16,
-        padding: '10px 20px',
-        borderBottom: '1px solid #eee',
-        fontFamily: 'system-ui',
-      }}
-    >
-      <span style={{ fontSize: 13, color: '#666' }}>
-        ログイン中{itemName ? `: ${itemName}` : ''}
-      </span>
-      <nav style={{ display: 'flex', gap: 12 }}>
-        <a href={`/owner/${ownerId}/notifications`} style={linkStyle}>通知</a>
-        <a href={`/owner/${ownerId}/pickup-points`} style={linkStyle}>受取拠点</a>
-        <a href={`/owner/${ownerId}/rewards`} style={linkStyle}>報酬</a>
+    <header className="app-header">
+      <span className="small-muted">ログイン中{itemName ? `: ${itemName}` : ''}</span>
+      <nav>
+        <a href={`/owner/${ownerId}/notifications`}>通知</a>
+        <a href={`/owner/${ownerId}/pickup-points`}>受取拠点</a>
+        <a href={`/owner/${ownerId}/rewards`}>報酬</a>
       </nav>
-      <button
-        onClick={logout}
-        style={{ marginLeft: 'auto', fontSize: 13, padding: '4px 10px', cursor: 'pointer' }}
-      >
-        ログアウト
-      </button>
+      <span className="spacer" />
+      <button className="button" onClick={logout}>ログアウト</button>
     </header>
   )
 }
