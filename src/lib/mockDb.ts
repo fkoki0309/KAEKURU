@@ -107,16 +107,27 @@ export function seedTag(token: string, status: Tag['status'] = 'unactivated') {
 
   export function createRewardForReturnCase(return_case_id: string, amount: number = 1000) {
     const rc = returnCases.get(return_case_id)
-    if (!rc) return { status: 404 }
-    // find owner by tag id
-    const tagId = rc.tag_id
-    const owner = getOwnerByTagId(tagId)
-    if (!owner) return { status: 404 }
+    if (!rc) return { status: 404 as const }
+    // One reward per return case — return the existing one if any.
+    for (const r of rewards.values()) {
+      if (r.return_case_id === return_case_id) return { status: 200 as const, reward: r }
+    }
+    const owner = getOwnerByTagId(rc.tag_id)
+    if (!owner) return { status: 404 as const }
     const id = `rw-${Math.random().toString(36).slice(2, 10)}`
-    const reward = { id, return_case_id, owner_id: owner.id, amount: amount || 0, status: 'pending', created_at: new Date().toISOString(), paid_at: null }
+    const reward = {
+      id,
+      return_case_id,
+      owner_id: owner.id,
+      amount: amount || 0,
+      status: 'pending',
+      finder_name: rc.finder_info?.name ?? null,
+      created_at: new Date().toISOString(),
+      paid_at: null,
+    }
     rewards.set(id, reward)
     saveMockFile()
-    return { status: 200, reward }
+    return { status: 200 as const, reward }
   }
 
   export function markRewardPaid(rewardId: string) {
@@ -143,8 +154,14 @@ export function seedTag(token: string, status: Tag['status'] = 'unactivated') {
     rc.finder_user_id = finder.finder_user_id ?? null
     rc.finder_info = { name: finder.name ?? null, email: finder.email ?? null, phone: finder.phone ?? null }
     returnCases.set(return_case_id, rc)
+    // If the owner already confirmed receipt, the reward becomes due now.
+    let reward = null
+    if (rc.status === 'received') {
+      const r = createRewardForReturnCase(return_case_id)
+      if (r.status === 200) reward = r.reward
+    }
     saveMockFile()
-    return { status: 200, return_case: rc }
+    return { status: 200, return_case: rc, reward }
   }
 
 export function getTagByToken(token: string) {
@@ -420,8 +437,16 @@ export function markReturnCaseReceived(id: string) {
   rc.status = 'received'
   rc.received_at = new Date().toISOString()
   returnCases.set(id, rc)
+
+  // Stage A: a reward is due only if the finder identified themselves
+  // (linked name/contact). Anonymous finders get no reward.
+  let reward = null
+  if (rc.finder_info?.name || rc.finder_info?.email) {
+    const r = createRewardForReturnCase(id)
+    if (r.status === 200) reward = r.reward
+  }
   saveMockFile()
-  return { status: 200 as const, return_case: rc }
+  return { status: 200 as const, return_case: rc, reward }
 }
 
 export function createNotificationForOwner(ownerId: string, payload: any) {

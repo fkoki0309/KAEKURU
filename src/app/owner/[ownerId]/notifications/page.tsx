@@ -3,12 +3,16 @@ import React, { useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
 import Screen from '../../../_components/Screen'
 
+type Confirmed = { hasReward: boolean }
+
 export default function OwnerNotificationsPage() {
   const params = useParams() as { ownerId?: string }
   const ownerId = params?.ownerId
   const [notes, setNotes] = useState<any[] | null>(null)
   const [loading, setLoading] = useState(false)
   const [err, setErr] = useState<string | null>(null)
+  const [confirmed, setConfirmed] = useState<Record<string, Confirmed>>({})
+  const [confirming, setConfirming] = useState<string | null>(null)
 
   useEffect(() => {
     if (!ownerId) return
@@ -22,6 +26,17 @@ export default function OwnerNotificationsPage() {
       .catch((e) => setErr(String(e)))
       .finally(() => setLoading(false))
   }, [ownerId])
+
+  async function confirmReceipt(rcId: string) {
+    setConfirming(rcId)
+    try {
+      const res = await fetch(`/api/return-cases/${rcId}/confirm`, { method: 'POST' })
+      const j = await res.json().catch(() => ({}))
+      if (j.ok) setConfirmed((c) => ({ ...c, [rcId]: { hasReward: !!j.reward } }))
+    } finally {
+      setConfirming(null)
+    }
+  }
 
   if (!ownerId) return <Screen title="通知">ownerId が指定されていません</Screen>
 
@@ -54,7 +69,10 @@ export default function OwnerNotificationsPage() {
                   {n.finder_memo && <div className="small-muted">メモ: {n.finder_memo}</div>}
                   {n.finder_photo_url && (
                     <div className="small-muted">
-                      写真: <a href={n.finder_photo_url} target="_blank" rel="noreferrer">開く</a>
+                      写真:{' '}
+                      <a href={n.finder_photo_url} target="_blank" rel="noreferrer">
+                        開く
+                      </a>
                     </div>
                   )}
                 </>
@@ -64,6 +82,26 @@ export default function OwnerNotificationsPage() {
                 受付番号: {n.case_code ?? n.return_case_id} —{' '}
                 {new Date(n.created_at).toLocaleString('ja-JP')}
               </div>
+
+              {n.type === 'found' &&
+                (confirmed[n.return_case_id] ? (
+                  <div className="small-muted">
+                    受け取りを確認しました。
+                    {confirmed[n.return_case_id].hasReward
+                      ? ' 報酬 ¥1,000 を用意しました（「報酬」ページで送金）。'
+                      : ' 拾得者が匿名のため報酬はありません。'}
+                  </div>
+                ) : (
+                  <div className="row">
+                    <button
+                      className="button primary"
+                      disabled={confirming === n.return_case_id}
+                      onClick={() => confirmReceipt(n.return_case_id)}
+                    >
+                      {confirming === n.return_case_id ? '確認中…' : '受け取りを確認'}
+                    </button>
+                  </div>
+                ))}
             </li>
           ))}
         </ul>
