@@ -56,6 +56,8 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   border: 1px solid var(--line);
+  border-radius: 14px;
+  overflow: hidden;
   background: #fff;
 }
 .path {
@@ -85,7 +87,7 @@
   background: var(--ink);
   color: #fff;
   border: none;
-  border-radius: 6px;
+  border-radius: 10px;
   font-size: 14px;
   font-family: inherit;
   cursor: pointer;
@@ -165,9 +167,23 @@
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
 }
 
-@media (max-width: 560px) {
+/* tablet / small laptop: keep the two columns but ease the spacing */
+@media (max-width: 760px) {
   .wrap {
-    padding: 0 20px 64px;
+    padding: 0 22px 68px;
+  }
+  .hero {
+    margin-top: 36px;
+  }
+  .paths {
+    margin-top: 40px;
+  }
+}
+
+/* phones: stack the two paths, stack the code form */
+@media (max-width: 620px) {
+  .wrap {
+    padding: 0 20px 60px;
   }
   .paths {
     grid-template-columns: 1fr;
@@ -179,9 +195,51 @@
   .codeForm {
     flex-direction: column;
     align-items: stretch;
+    gap: 16px;
+  }
+  .codeInput {
+    flex: 0 0 auto;
   }
   .codeForm .cta {
     justify-content: center;
+  }
+}
+
+/* small phones: tighten type and rhythm */
+@media (max-width: 400px) {
+  .wrap {
+    padding: 0 16px 52px;
+  }
+  .wordmark {
+    margin-top: 32px;
+  }
+  .hero {
+    margin-top: 28px;
+    font-size: 27px;
+    line-height: 1.22;
+  }
+  .lede {
+    margin-top: 16px;
+    font-size: 15px;
+  }
+  .paths {
+    margin-top: 32px;
+    border-radius: 12px;
+  }
+  .path {
+    padding: 20px 18px;
+  }
+  .stepsHead {
+    margin-top: 48px;
+  }
+  .step {
+    grid-template-columns: 30px 1fr;
+    gap: 12px;
+    padding: 15px 0;
+    font-size: 14px;
+  }
+  .footer {
+    margin-top: 44px;
   }
 }
 
