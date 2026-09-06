@@ -43,7 +43,7 @@ export default function OwnerRewardsPage({ params }: { params: { ownerId: string
               <div className="small-muted">返却ケース: {r.return_case_id}</div>
               {r.status !== 'paid' && (
                 <div className="row">
-                  <button className="button positive" onClick={() => pay(r.id)}>支払済みにする（モック）</button>
+                  <button className="button positive" onClick={() => pay(r.id)}>支払済みにする</button>
                 </div>
               )}
             </li>

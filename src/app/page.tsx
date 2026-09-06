@@ -48,11 +48,6 @@ export default function HomePage() {
             <a href="/owner/login" className="button primary">ログイン</a>
           )}
         </div>
-        {ownerId === null && (
-          <p className="small-muted" style={{ margin: 0 }}>
-            モック環境です。<code>test</code> / <code>test</code> でログインできます。
-          </p>
-        )}
       </div>
 
       <div className="card stack">
