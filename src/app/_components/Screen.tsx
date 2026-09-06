@@ -1,4 +1,5 @@
 import React from 'react'
+import Link from 'next/link'
 import BrandMark from './BrandMark'
 
 type Props = {
@@ -28,9 +29,9 @@ export default function Screen({ title, back, subtitle, action, brand = false, w
           <div className="row-between">
             <div className="row">
               {back && (
-                <a href={back} className="button ghost">
+                <Link href={back} className="button ghost">
                   ← 戻る
-                </a>
+                </Link>
               )}
               {title && (
                 <h1 className="page-title" style={{ margin: 0 }}>

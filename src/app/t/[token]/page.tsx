@@ -1,5 +1,6 @@
 "use client"
 import React from 'react'
+import Link from 'next/link'
 import { useParams } from 'next/navigation'
 import Screen from '../../_components/Screen'
 import TagStatusCard from '../../_components/TagStatusCard'
@@ -31,9 +32,9 @@ export default function TokenPage() {
               : 'この持ち物の持ち主の方はログインして登録してください。読み取ったトークンは登録画面に引き継がれます。'}
           </p>
           <div className="row">
-            <a href={registerHref} className="button primary lg">
+            <Link href={registerHref} className="button primary lg">
               {ownerId ? 'この持ち物を登録する' : '持ち主としてログインして登録'}
-            </a>
+            </Link>
           </div>
         </div>
       )}
@@ -45,7 +46,7 @@ export default function TokenPage() {
             この持ち物を拾った方は、次の画面から届け出を行ってください。
           </p>
           <div className="row">
-            <a href={`/t/${token}/report`} className="button primary lg">届け出る</a>
+            <Link href={`/t/${token}/report`} className="button primary lg">届け出る</Link>
           </div>
         </div>
       )}

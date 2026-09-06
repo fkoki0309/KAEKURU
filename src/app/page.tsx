@@ -1,5 +1,6 @@
 "use client"
 import React, { useState } from 'react'
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import styles from './page.module.css'
 import { useCurrentOwnerId } from './_hooks/useCurrentOwnerId'
@@ -19,7 +20,7 @@ export default function HomePage() {
     <div className={styles.page}>
       <div className={styles.topRule} />
       <div className={styles.wrap}>
-        <a href="/" className={styles.wordmark}>KAEKURU</a>
+        <Link href="/" className={styles.wordmark}>KAEKURU</Link>
 
         <h1 className={styles.hero}>
           落とし物が、
@@ -39,13 +40,13 @@ export default function HomePage() {
               シールを登録し、落とし物の通知を受け取ります。受け取り確認とお礼の送金まで。
             </p>
             {ownerId ? (
-              <a href={`/owner/${ownerId}`} className={styles.cta}>
+              <Link href={`/owner/${ownerId}`} className={styles.cta}>
                 マイページへ <span aria-hidden>→</span>
-              </a>
+              </Link>
             ) : (
-              <a href="/owner/login" className={styles.cta}>
+              <Link href="/owner/login" className={styles.cta}>
                 ログイン <span aria-hidden>→</span>
-              </a>
+              </Link>
             )}
           </div>
 

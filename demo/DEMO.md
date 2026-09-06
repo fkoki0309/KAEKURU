@@ -19,24 +19,27 @@
 
 > zsh にコメント(`#`)をそのまま貼ると `pathspec '#' did not match` になることがあります。以下は **コメントなし** です。
 
-既存の dev サーバーが 3000 番を掴んでいたら先に止める:
+既存のサーバーが 3000 番を掴んでいたら先に止める:
 
 ```bash
 lsof -ti tcp:3000 | xargs kill
 ```
 
-セットアップ:
+**スマホでデモするなら本番ビルドを使う**（`next dev` は毎画面の初回コンパイルが数秒かかり、ボタンが「効かない → 2回タップ」になる）:
 
 ```bash
 cd ~/KAEKURU
 git checkout main && git pull
 rm -rf tmp .next
-DATABASE_URL= npx next dev -H 0.0.0.0 -p 3000
+npm run demo:build     # ALLOW_MOCK_DB=1 next build
+npm run demo           # ALLOW_MOCK_DB=1 next start -H 0.0.0.0 -p 3000
 ```
 
-`rm -rf tmp` でモック状態を消すと、起動時に `demo-token-123`(未登録)/ `demo-token-activated`(登録済み)がシードし直されます。
+`rm -rf tmp` でモック状態を消すと、起動時に `demo-token-123`(未登録)/ `demo-token-activated`(登録済み)がシードし直されます。やり直すたびに `rm -rf tmp` → `npm run demo`（再ビルド不要）。
 
-- **スマホで試す**: Mac と同じ Wi-Fi に接続 → `-lan` 版 QR。初回は macOS のファイアウォールで node の受信を許可。IP が違う場合は下記「QR を作り直す」参照。
+Mac だけで手早く確認するなら `DATABASE_URL= npx next dev -p 3000` でも可（初回だけ遅い）。
+
+- **スマホで試す**: Mac と同じ Wi-Fi。`-lan` 版 QR。初回接続で macOS のファイアウォール許可ダイアログが出たら「許可」。IP が違う場合は下記「QR を作り直す」。
 - **Mac だけで試す**: `-localhost` 版 QR、または URL を直打ち。
 
 ---
