@@ -2,25 +2,40 @@
 
 拾得者フローはログイン不要なので、**スマホ1台**で「持ち主」「拾った人」の両方を通しで実演できます（所要 5分程度）。モックモード（`DATABASE_URL` なし）で動かします。**全ステップ画面操作のみ**、端末コマンドは起動時だけ。
 
-このメモは Mac の LAN IP が **`192.168.11.5`** の前提です。違う場合は末尾「IP が変わったとき」。
+**Mac / Windows どちらでも可**（`npm run demo` は cross-env でクロスプラットフォーム対応済み）。このメモは PC の LAN IP が **`192.168.11.5`** の前提です。違う場合は末尾「IP が変わったとき」。
 
 ---
 
-## 0. 起動（Mac 側で1回）
+## 0. 起動（PC 側で1回）
 
-Mac と スマホを **同じ Wi-Fi** に。デモは **本番ビルド** で動かします（`npm run dev` は画面ごとの初回コンパイルで数秒待たされ、ボタンが効かず「2回タップ」になるため）。
+PC と スマホを **同じ Wi-Fi** に。デモは **本番ビルド** で動かします（`npm run dev` は画面ごとの初回コンパイルで数秒待たされ、ボタンが効かず「2回タップ」になるため）。
+
+**共通**:
 
 ```bash
-cd ~/KAEKURU
-lsof -ti tcp:3000 | xargs kill      # 3000番を使っていたら止める
-rm -rf tmp .next
-npm run demo:build                 # ALLOW_MOCK_DB=1 next build（初回だけ1〜2分）
+npm install                        # 初回のみ（cross-env 等）
+npx kill-port 3000                 # 3000番を使っていたら止める
+npm run demo:build                 # 初回だけ1〜2分（ALLOW_MOCK_DB=1 next build）
 npm run demo                       # ALLOW_MOCK_DB=1 next start -H 0.0.0.0 -p 3000
 ```
 
-- `rm -rf tmp` でモック状態が消え、起動時に `demo-token-123`（未登録）/ `demo-token-activated`（登録済み）がシードし直されます。
-- 初めてスマホから接続したとき macOS の**ファイアウォール許可ダイアログ**が出たら「許可」。
+`npm run demo:build` の前に、モック状態フォルダ `tmp` と `.next` を消しておく:
+
+| | コマンド |
+|---|---|
+| **Mac / Linux** | `rm -rf tmp .next` |
+| **Windows (PowerShell)** | `Remove-Item -Recurse -Force tmp, .next -ErrorAction SilentlyContinue` |
+
+- `tmp` を消すと、起動時に `demo-token-123`（未登録）/ `demo-token-activated`（登録済み）がシードし直されます。
+- 初めてスマホから接続したとき、**ファイアウォールの許可ダイアログ**（macOS / Windows Defender）が出たら「許可」。
 - スマホのブラウザで `http://192.168.11.5:3000/` を開いてホームが出れば準備完了。
+
+### PC の LAN IP の調べ方
+
+| | コマンド |
+|---|---|
+| **Mac** | `ipconfig getifaddr en0` |
+| **Windows** | `ipconfig` → Wi-Fi アダプターの「IPv4 アドレス」 |
 
 ---
 
@@ -90,14 +105,14 @@ Mac だけで試すなら URL の `192.168.11.5` を `localhost` に読み替え
 
 ## 3. やり直し（リセット）
 
-サーバーを止めて（`Ctrl+C`）:
+サーバーを止めて（`Ctrl+C`）、`tmp` を消して再起動:
 
-```bash
-rm -rf tmp
-npm run demo        # 再ビルド不要
-```
+| | コマンド |
+|---|---|
+| **Mac / Linux** | `rm -rf tmp && npm run demo` |
+| **Windows** | `Remove-Item -Recurse -Force tmp; npm run demo` |
 
-`demo-token-123` が未登録に戻り、②から再開できます。
+再ビルドは不要。`demo-token-123` が未登録に戻り、②から再開できます。
 
 ---
 
@@ -105,17 +120,20 @@ npm run demo        # 再ビルド不要
 
 | 症状 | 対処 |
 |---|---|
-| スマホから開けない | Mac と同じ Wi-Fi か確認 / ファイアウォールで node を許可 / `npm run demo` が動いているか |
-| `EADDRINUSE :3000` | `lsof -ti tcp:3000 \| xargs kill` してから再起動 |
+| スマホから開けない | PC と同じ Wi-Fi か確認 / ファイアウォールで node を許可 / `npm run demo` が動いているか |
+| ポート 3000 が使用中 | `npx kill-port 3000` してから再起動 |
 | ボタンが遅い・2回タップ要る | `npm run dev` で動かしている。`npm run demo`（本番ビルド）を使う |
 | 「未登録」のままで登録できない | ②のログイン→登録が済んでいない。持ち物名とトークンを両方入れて「登録する」 |
+| `cross-env: command not found` | `npm install` を実行 |
 
 ## 5. IP が変わったとき
 
+`<新IP>` を調べた LAN IP に置き換えて:
+
 ```bash
-ipconfig getifaddr en0            # 新しい LAN IP を確認
-IP=$(ipconfig getifaddr en0)
-npx qrcode -o demo/qr-demo-token-123-lan.png "http://$IP:3000/t/demo-token-123" -w 600
+npx qrcode -o demo/qr-demo-token-123-lan.png "http://<新IP>:3000/t/demo-token-123" -w 600
 ```
+
+URL 直打ちなら IP 部分を差し替えるだけ。
 
 URL 直打ちなら IP 部分を差し替えるだけ。
