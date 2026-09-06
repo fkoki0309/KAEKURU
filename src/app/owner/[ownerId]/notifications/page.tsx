@@ -34,10 +34,35 @@ export default function OwnerNotificationsPage() {
       {notes && notes.length > 0 && (
         <ul className="list">
           {notes.map((n) => (
-            <li key={n.id}>
-              <div><strong>{n.message}</strong></div>
+            <li key={n.id} className="stack-sm">
+              <div>
+                <strong>
+                  {n.type === 'found'
+                    ? `「${n.item_name ?? '持ち物'}」の落とし物が届け出られました`
+                    : n.message}
+                </strong>
+              </div>
+
+              {n.type === 'found' && (
+                <>
+                  <div className="small-muted">
+                    届け方:{' '}
+                    {n.method === 'mail'
+                      ? `郵送${n.pickup_point_name ? `（${n.pickup_point_name} 留め）` : ''}`
+                      : `手渡し${n.dropoff_location ? `（${n.dropoff_location}）` : ''}`}
+                  </div>
+                  {n.finder_memo && <div className="small-muted">メモ: {n.finder_memo}</div>}
+                  {n.finder_photo_url && (
+                    <div className="small-muted">
+                      写真: <a href={n.finder_photo_url} target="_blank" rel="noreferrer">開く</a>
+                    </div>
+                  )}
+                </>
+              )}
+
               <div className="small-muted">
-                ケース: {n.return_case_id} — {new Date(n.created_at).toLocaleString()}
+                受付番号: {n.case_code ?? n.return_case_id} —{' '}
+                {new Date(n.created_at).toLocaleString('ja-JP')}
               </div>
             </li>
           ))}
