@@ -20,7 +20,7 @@ export default function OwnerNav({ ownerId, account }: { ownerId: string; accoun
         <Link href={`/owner/${ownerId}`}>マイページ</Link>
         <Link href={`/owner/${ownerId}/notifications`}>通知</Link>
         <Link href={`/owner/${ownerId}/pickup-points`}>受取拠点</Link>
-        <Link href={`/owner/${ownerId}/rewards`}>報酬</Link>
+        <Link href={`/owner/${ownerId}/rewards`}>お礼</Link>
       </nav>
       <span className="spacer" />
       <span className="small-muted">ログイン中{account ? `: ${account}` : ''}</span>

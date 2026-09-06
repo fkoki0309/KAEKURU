@@ -14,8 +14,8 @@ export default function LinkDonePage() {
         <span className="pill pill--active">登録完了</span>
         <p className="small-muted" style={{ margin: 0 }}>
           {hasReward
-            ? '持ち主がお礼（¥1,000）を送金します。完了したら通知されます。'
-            : '持ち主が受け取りを確認すると、お礼（¥1,000）が送られます。'}
+            ? '持ち主が登録した送り先へ直接お礼（¥1,000）をお送りします。当サービスは送金を代行しません。'
+            : '持ち主が受け取りを確認すると、登録した送り先へ持ち主が直接お礼（¥1,000）をお送りします。'}
         </p>
       </div>
 

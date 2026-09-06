@@ -89,7 +89,7 @@ export default function OwnerDashboardPage() {
         <h2 className="section-title">アカウント</h2>
         <div className="row">
           <Link href={`/owner/${ownerId}/pickup-points`} className="button">受取拠点</Link>
-          <Link href={`/owner/${ownerId}/rewards`} className="button">報酬</Link>
+          <Link href={`/owner/${ownerId}/rewards`} className="button">お礼</Link>
         </div>
       </div>
     </Screen>

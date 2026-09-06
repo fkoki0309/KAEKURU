@@ -86,6 +86,15 @@ export default function ReportPage() {
         <>
           <TagStatusCard status="active" itemName={tag.itemName} />
 
+          <div className="panel panel--muted stack-sm">
+            <p className="small-muted" style={{ margin: 0 }}>
+              拾得から<strong>1週間以内</strong>に発送・お渡しください。1週間を過ぎると、拾得者が受け取れる権利（報労金・所有権）がなくなることがあります（遺失物法）。
+            </p>
+            <p className="small-muted" style={{ margin: 0 }}>
+              すぐに返せない場合は、お近くの交番・警察署にお届けください。
+            </p>
+          </div>
+
           <section className="panel panel--dashed stack">
             {method === 'choose' && <MethodChooser onPick={setMethod} />}
 

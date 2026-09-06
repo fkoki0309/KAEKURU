@@ -10,7 +10,7 @@
 | `POST /api/return-cases/:id/ship` | 郵送ケースの「発送完了」報告 | 不要 |
 | `POST /api/return-cases/:id/link-finder` | 拾得者が後からログインして受付番号で紐付け | 必要 |
 | `POST /api/return-cases/:id/receive` | 持ち主の「受け取り確認」 | 必要 |
-| `POST /api/rewards/:id/pay` | 報酬の送金トリガー | 必要 |
+| `POST /api/rewards/:id/pay` | お礼を「送金済み」にする(持ち主の自己申告。実送金は当事者間で直接) | 必要 |
 
 ## エンドポイントの補足
 
@@ -32,7 +32,9 @@
 
 ### `POST /api/return-cases/:id/receive`
 - 持ち主が「受け取り確認」ボタンを押した時に呼ぶ
-- `finder_user_id` が設定されていれば `rewards` を `pending` → 送金トリガーへ、NULLなら `skipped` にする
+- 拾得者が受け取り先(氏名・受け取り方法)を登録済みなら `rewards` を `pending` で作成し、
+  「お礼」ページに送り先を表示する。未登録なら作成しない(お礼はスキップ)
+- 実際の送金は当事者間で直接行う(`docs/legal-risks.md` B)。`pay` は自己申告のフラグ更新のみ
 
 ## 関連ドキュメント
 

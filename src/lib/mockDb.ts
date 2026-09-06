@@ -122,6 +122,8 @@ export function seedTag(token: string, status: Tag['status'] = 'unactivated') {
       amount: amount || 0,
       status: 'pending',
       finder_name: rc.finder_info?.name ?? null,
+      payout_method: rc.finder_info?.payout_method ?? null,
+      payout_account: rc.finder_info?.payout_account ?? null,
       created_at: new Date().toISOString(),
       paid_at: null,
     }
@@ -146,13 +148,19 @@ export function seedTag(token: string, status: Tag['status'] = 'unactivated') {
     return out
   }
 
-  export function linkFinderToReturnCase(return_case_id: string, finder: { name?: string, email?: string, phone?: string, finder_user_id?: string }) {
+  export function linkFinderToReturnCase(return_case_id: string, finder: { name?: string, email?: string, phone?: string, payout_method?: string, payout_account?: string, finder_user_id?: string }) {
     const rc = returnCases.get(return_case_id)
     if (!rc) return { status: 404 }
     // If already linked, return conflict
     if (rc.finder_user_id) return { status: 409, message: 'already linked', return_case: rc }
     rc.finder_user_id = finder.finder_user_id ?? null
-    rc.finder_info = { name: finder.name ?? null, email: finder.email ?? null, phone: finder.phone ?? null }
+    rc.finder_info = {
+      name: finder.name ?? null,
+      email: finder.email ?? null,
+      phone: finder.phone ?? null,
+      payout_method: finder.payout_method ?? null,
+      payout_account: finder.payout_account ?? null,
+    }
     returnCases.set(return_case_id, rc)
     // If the owner already confirmed receipt, the reward becomes due now.
     let reward = null
@@ -441,7 +449,7 @@ export function markReturnCaseReceived(id: string) {
   // Stage A: a reward is due only if the finder identified themselves
   // (linked name/contact). Anonymous finders get no reward.
   let reward = null
-  if (rc.finder_info?.name || rc.finder_info?.email) {
+  if (rc.finder_info?.name || rc.finder_info?.email || rc.finder_info?.payout_account) {
     const r = createRewardForReturnCase(id)
     if (r.status === 200) reward = r.reward
   }
