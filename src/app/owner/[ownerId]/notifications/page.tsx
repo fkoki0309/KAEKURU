@@ -1,6 +1,7 @@
 "use client"
 import React, { useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
+import Screen from '../../../_components/Screen'
 
 export default function OwnerNotificationsPage() {
   const params = useParams() as { ownerId?: string }
@@ -22,12 +23,10 @@ export default function OwnerNotificationsPage() {
       .finally(() => setLoading(false))
   }, [ownerId])
 
-  if (!ownerId) return <div className="container card">ownerId が指定されていません</div>
+  if (!ownerId) return <Screen title="通知">ownerId が指定されていません</Screen>
 
   return (
-    <div className="container card stack">
-      <h1 className="page-title">通知</h1>
-
+    <Screen title="通知">
       {loading && <p className="muted">読み込み中…</p>}
       {err && <p className="error-text">{err}</p>}
       {!loading && notes && notes.length === 0 && <p className="small-muted">通知はありません</p>}
@@ -44,6 +43,6 @@ export default function OwnerNotificationsPage() {
           ))}
         </ul>
       )}
-    </div>
+    </Screen>
   )
 }

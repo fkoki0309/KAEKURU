@@ -30,12 +30,11 @@ lsof -ti tcp:3000 | xargs kill
 ```bash
 cd ~/KAEKURU
 git checkout main && git pull
-git checkout -- tmp/mockDb.json
-rm -rf .next
+rm -rf tmp .next
 DATABASE_URL= npx next dev -H 0.0.0.0 -p 3000
 ```
 
-`git checkout -- tmp/mockDb.json` は `demo-token-123` を「未登録」に戻すためのものです。
+`rm -rf tmp` でモック状態を消すと、起動時に `demo-token-123`(未登録)/ `demo-token-activated`(登録済み)がシードし直されます。
 
 - **スマホで試す**: Mac と同じ Wi-Fi に接続 → `-lan` 版 QR。初回は macOS のファイアウォールで node の受信を許可。IP が違う場合は下記「QR を作り直す」参照。
 - **Mac だけで試す**: `-localhost` 版 QR、または URL を直打ち。
@@ -138,8 +137,7 @@ curl -s -X POST http://localhost:3000/api/return-cases/<rcId>/rewards \
 dev サーバーを停止（Ctrl+C）してから:
 
 ```bash
-git checkout -- tmp/mockDb.json
-rm -rf .next
+rm -rf tmp .next
 ```
 
 ---

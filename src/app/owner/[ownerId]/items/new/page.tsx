@@ -1,11 +1,11 @@
 "use client"
 import React, { useState } from 'react'
-import { useParams, useRouter, useSearchParams } from 'next/navigation'
+import { useParams, useSearchParams } from 'next/navigation'
+import Screen from '../../../../_components/Screen'
 
 export default function RegisterItemPage() {
   const params = useParams() as { ownerId?: string }
   const ownerId = params?.ownerId ?? ''
-  const router = useRouter()
   const search = useSearchParams()
   const isFirst = search?.get('first') === '1' // ダッシュボードから誘導された初回登録
   const scannedToken = search?.get('token') ?? '' // QR から引き継がれたトークン
@@ -72,8 +72,7 @@ export default function RegisterItemPage() {
 
   if (done) {
     return (
-      <div className="container card stack">
-        <h1 className="page-title">持ち物を登録しました</h1>
+      <Screen title="持ち物を登録しました">
         <div className="panel stack-sm" style={{ alignItems: 'flex-start' }}>
           <span className="pill pill--active">登録完了</span>
           <p className="small-muted" style={{ margin: 0 }}>
@@ -97,23 +96,16 @@ export default function RegisterItemPage() {
             <a href={`/owner/${ownerId}`} className="button primary">マイページに戻る</a>
           </div>
         )}
-      </div>
+      </Screen>
     )
   }
 
   return (
-    <div className="container card stack">
-      <div className="row">
-        {!isFirst && <a href={`/owner/${ownerId}`} className="button ghost">← マイページ</a>}
-        <h1 className="page-title" style={{ margin: 0 }}>持ち物を登録</h1>
-      </div>
-
-      {isFirst && (
-        <p className="small-muted" style={{ margin: 0 }}>
-          はじめに、シールを貼った持ち物を1つ登録してください。
-        </p>
-      )}
-
+    <Screen
+      title="持ち物を登録"
+      back={isFirst ? undefined : `/owner/${ownerId}`}
+      subtitle={isFirst ? 'はじめに、シールを貼った持ち物を1つ登録してください。' : undefined}
+    >
       <form onSubmit={onSubmit} className="stack-sm">
         <div className="field">
           <label>QRトークン <span className="req">*</span></label>
@@ -151,6 +143,6 @@ export default function RegisterItemPage() {
       </form>
 
       {error && <p className="error-text" style={{ margin: 0 }}>{error}</p>}
-    </div>
+    </Screen>
   )
 }

@@ -1,10 +1,8 @@
 import { NextResponse } from 'next/server'
-import { cookies } from 'next/headers'
 // NOTE: This is a sample implementation. Adapt to your auth and DB setup.
 import { prisma } from '../../../../lib/prisma' // assume prisma client is exposed
 import * as mockDb from '../../../../lib/mockDb'
-
-const SESSION_COOKIE = 'kaekuru_session'
+import { currentOwner } from '../../../../lib/session'
 
 export async function POST(request: Request) {
   try {
@@ -23,8 +21,7 @@ export async function POST(request: Request) {
 
     // If DATABASE_URL is not set, use in-memory mock DB for local dev
     if (!process.env.DATABASE_URL) {
-      const sessionOwner = mockDb.getOwnerBySession(cookies().get(SESSION_COOKIE)?.value)
-      const res = mockDb.activateTag(token, userId, item_name, sessionOwner?.id ?? null, item_photo_url ?? null)
+      const res = mockDb.activateTag(token, userId, item_name, currentOwner()?.id ?? null, item_photo_url ?? null)
       if (res.status === 404) return NextResponse.json({ error: 'このトークンのタグが見つかりません' }, { status: 404 })
       if (res.status === 409) {
         const msg =

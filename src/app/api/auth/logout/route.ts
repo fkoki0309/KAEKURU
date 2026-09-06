@@ -1,8 +1,7 @@
 import { NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
 import * as mockDb from '../../../../lib/mockDb'
-
-const SESSION_COOKIE = 'kaekuru_session'
+import { SESSION_COOKIE } from '../../../../lib/session'
 
 export async function POST() {
   const token = cookies().get(SESSION_COOKIE)?.value

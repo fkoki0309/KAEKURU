@@ -1,7 +1,7 @@
 'use client'
 import React, { useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import BrandMark from '../../_components/BrandMark'
+import Screen from '../../_components/Screen'
 
 export default function OwnerLoginPage() {
   const router = useRouter()
@@ -41,17 +41,16 @@ export default function OwnerLoginPage() {
   }
 
   return (
-    <div className="container card stack" style={{ maxWidth: 420 }}>
-      <BrandMark height={40} />
-      <div className="stack-sm">
-        <h1 className="page-title" style={{ margin: 0 }}>持ち主ログイン</h1>
-        {scannedToken && (
-          <p className="small-muted" style={{ margin: 0 }}>
-            ログイン後、読み取ったQR（<code>{scannedToken}</code>）の登録に進みます。
-          </p>
-        )}
-      </div>
-
+    <Screen
+      brand
+      width={420}
+      title="持ち主ログイン"
+      subtitle={
+        scannedToken ? (
+          <>ログイン後、読み取ったQR（<code>{scannedToken}</code>）の登録に進みます。</>
+        ) : undefined
+      }
+    >
       <form onSubmit={onSubmit} className="stack-sm">
         <div className="field">
           <label>メール</label>
@@ -72,6 +71,6 @@ export default function OwnerLoginPage() {
       </form>
 
       {error && <p className="error-text" style={{ margin: 0 }}>{error}</p>}
-    </div>
+    </Screen>
   )
 }
