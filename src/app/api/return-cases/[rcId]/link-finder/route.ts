@@ -7,7 +7,14 @@ export async function POST(request: Request, { params }: { params: { rcId: strin
     const { rcId } = params
     if (!rcId) return NextResponse.json({ error: 'rcId required' }, { status: 400 })
     const body = await request.json()
-    const finder = { name: body?.name, email: body?.email, phone: body?.phone, finder_user_id: body?.finder_user_id }
+    const finder = {
+      name: body?.name,
+      email: body?.email,
+      phone: body?.phone,
+      payout_method: body?.payout_method,
+      payout_account: body?.payout_account,
+      finder_user_id: body?.finder_user_id,
+    }
 
     if (!process.env.DATABASE_URL) {
       const res = mockDb.linkFinderToReturnCase(rcId, finder)

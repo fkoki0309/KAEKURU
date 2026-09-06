@@ -33,6 +33,7 @@ export default function OwnerRewardsPage({ params }: { params: { ownerId: string
   }
 
   const STATUS_LABEL: Record<string, string> = { pending: '送金待ち', paid: '送金済み', skipped: 'スキップ' }
+  const METHOD_LABEL: Record<string, string> = { digital_gift: 'デジタルギフト', paypay: 'PayPay 送金' }
 
   return (
     <Screen title="報酬一覧">
@@ -53,6 +54,10 @@ export default function OwnerRewardsPage({ params }: { params: { ownerId: string
               </div>
               <div className="small-muted">
                 送り先: {r.finder_name || '（未設定）'}
+              </div>
+              <div className="small-muted">
+                受け取り方法: {r.payout_method ? METHOD_LABEL[r.payout_method] ?? r.payout_method : '（未設定）'}
+                {r.payout_account ? ` / ${r.payout_account}` : ''}
               </div>
               {r.status !== 'paid' && (
                 <div className="row">
