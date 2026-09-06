@@ -44,11 +44,11 @@ npm run demo                       # ALLOW_MOCK_DB=1 next start -H 0.0.0.0 -p 30
 | 用途 | URL | QR ファイル（`demo/`） |
 |---|---|---|
 | ホーム | `http://192.168.11.5:3000/` | — |
-| ログイン | `http://192.168.11.5:3000/owner/login` | — |
+| ログイン | `http://192.168.11.5:3000/owner/login` | `qr-owner-login-lan.png` |
 | タグ（拾得者がスキャン） | `http://192.168.11.5:3000/t/demo-token-123` | `qr-demo-token-123-lan.png` |
 
 ログイン情報: **`test` / `test`**
-Mac だけで試すなら URL の `192.168.11.5` を `localhost` に読み替え（`qr-demo-token-123-localhost.png`）。
+Mac だけで試すなら URL の `192.168.11.5` を `localhost` に読み替え（`qr-owner-login-localhost.png` / `qr-demo-token-123-localhost.png`）。
 
 ---
 
