@@ -17,13 +17,25 @@
 
 ## 0. 起動 & リセット
 
+> zsh にコメント(`#`)をそのまま貼ると `pathspec '#' did not match` になることがあります。以下は **コメントなし** です。
+
+既存の dev サーバーが 3000 番を掴んでいたら先に止める:
+
+```bash
+lsof -ti tcp:3000 | xargs kill
+```
+
+セットアップ:
+
 ```bash
 cd ~/KAEKURU
 git checkout main && git pull
-git checkout -- tmp/mockDb.json          # demo-token-123 を「未登録」に戻す
+git checkout -- tmp/mockDb.json
 rm -rf .next
 DATABASE_URL= npx next dev -H 0.0.0.0 -p 3000
 ```
+
+`git checkout -- tmp/mockDb.json` は `demo-token-123` を「未登録」に戻すためのものです。
 
 - **スマホで試す**: Mac と同じ Wi-Fi に接続 → `-lan` 版 QR。初回は macOS のファイアウォールで node の受信を許可。IP が違う場合は下記「QR を作り直す」参照。
 - **Mac だけで試す**: `-localhost` 版 QR、または URL を直打ち。
@@ -89,12 +101,12 @@ DATABASE_URL= npx next dev -H 0.0.0.0 -p 3000
 
 3. 受け取り確認
 
-   ▶ **ターミナル**（通知画面に確認ボタンが未実装）:
+   ▶ **ターミナル**（通知画面に確認ボタンが未実装）。まず `return_case_id` を確認:
    ```bash
-   # return_case_id を確認
    curl -s -b /tmp/kaekuru.txt http://localhost:3000/api/owners/owner-demo/notifications
-
-   # 受け取り確認（<rcId> を上で確認した return_case_id に置換）
+   ```
+   `<rcId>` をその `return_case_id` に置換して受け取り確認:
+   ```bash
    curl -s -X POST http://localhost:3000/api/return-cases/<rcId>/confirm
    ```
 
@@ -102,9 +114,8 @@ DATABASE_URL= npx next dev -H 0.0.0.0 -p 3000
 
 ## 5.【報酬】（任意）
 
-▶ **ターミナル**:
+▶ **ターミナル**（報酬を作成。`<rcId>` は上の return_case_id）:
 ```bash
-# 報酬を作成
 curl -s -X POST http://localhost:3000/api/return-cases/<rcId>/rewards \
   -H 'Content-Type: application/json' -d '{"amount":1000}'
 ```
@@ -124,8 +135,9 @@ curl -s -X POST http://localhost:3000/api/return-cases/<rcId>/rewards \
 
 ## やり直し（リセット）
 
+dev サーバーを停止（Ctrl+C）してから:
+
 ```bash
-# dev サーバーを停止（Ctrl+C）してから
 git checkout -- tmp/mockDb.json
 rm -rf .next
 ```
@@ -134,7 +146,9 @@ rm -rf .next
 
 ## QR を作り直す（IP が違う / 別ポート）
 
+`IP` は自分の LAN IP（`ipconfig getifaddr en0`）。
+
 ```bash
-IP=$(ipconfig getifaddr en0)   # 自分の LAN IP
+IP=$(ipconfig getifaddr en0)
 npx qrcode -o qr.png "http://$IP:3000/a/demo-token-123" -w 600
 ```
