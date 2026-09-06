@@ -15,12 +15,6 @@ export default function ReportPage() {
   const [memo, setMemo] = useState('')
   const [photoUrl, setPhotoUrl] = useState<string | null>(null)
   const [method, setMethod] = useState<'dropoff' | 'mail' | 'choose'>(methodParam ?? 'choose')
-  const [mailName, setMailName] = useState('')
-  const [mailAddress, setMailAddress] = useState('')
-  const [mailPhone, setMailPhone] = useState('')
-  const [ownerPickupPoints, setOwnerPickupPoints] = useState<any[] | null>(null)
-  const [selectedPickupPoint, setSelectedPickupPoint] = useState<any | null>(null)
-  const [issuedShipmentId, setIssuedShipmentId] = useState<string | null>(null)
   const [fileUploading, setFileUploading] = useState(false)
   const [sending, setSending] = useState(false)
   const [resultMessage, setResultMessage] = useState<string | null>(null)
@@ -49,34 +43,11 @@ export default function ReportPage() {
 
     useEffect(() => {
       if (shipmentIdParam) {
-        setResultMessage(`送り状発行済み: ${shipmentIdParam}`)
+        setResultMessage(`送り状処理済み`) 
       }
     }, [shipmentIdParam])
 
-  // fetch owner pickup points automatically when mail method selected
-  useEffect(() => {
-    async function loadPickup() {
-      const ownerId = (window as any).__kaekuru_owner_id__
-      if (!ownerId) return
-      try {
-        const res = await fetch(`/api/owners/${ownerId}/pickup-points`)
-        const j = await res.json()
-        if (!res.ok) return setOwnerPickupPoints([])
-        setOwnerPickupPoints(j.pickup_points || [])
-        const first = (j.pickup_points || [])[0] ?? null
-        setSelectedPickupPoint(first)
-        if (first) {
-          setMailName(first.recipient_name || '')
-          setMailAddress(first.facility_address || '')
-          setMailPhone(first.phone || '')
-        }
-      } catch (err) {
-        console.error(err)
-        setOwnerPickupPoints([])
-      }
-    }
-    if (method === 'mail') loadPickup()
-  }, [method, token])
+  // mail flow moved to dedicated pages
 
   if (!token) return <div>トークンが指定されていません</div>
 
@@ -119,90 +90,7 @@ export default function ReportPage() {
           </>
         )}
 
-        {method === 'mail' && (
-          <>
-            <div style={{ marginBottom: 10 }}>
-              <button className="button primary" onClick={async () => {
-                try {
-                  const res = await fetch('/api/shipments/issue', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ token }) })
-                  const j = await res.json()
-                  if (!res.ok) return alert(j.error || '送り状発行に失敗しました')
-                  setIssuedShipmentId(j.shipment_id)
-                  setResultMessage(`送り状発行済み: ${j.shipment_id}`)
-                  // if API returned pickup_point_id, try to select it
-                  if (j.pickup_point_id) {
-                    // ensure pickup points are loaded
-                    if (!ownerPickupPoints) {
-                      const ownerId = (window as any).__kaekuru_owner_id__
-                      const r = await fetch(`/api/owners/${ownerId}/pickup-points`)
-                      const body = await r.json()
-                      setOwnerPickupPoints(body.pickup_points || [])
-                    }
-                    if (j.pickup_point_id) {
-                      if (!ownerPickupPoints) {
-                        const ownerId = (window as any).__kaekuru_owner_id__
-                        try {
-                          const r = await fetch(`/api/owners/${ownerId}/pickup-points`)
-                          const body = await r.json()
-                          const pts = body.pickup_points || []
-                          setOwnerPickupPoints(pts)
-                          const p = pts.find((x: any) => x.id === j.pickup_point_id)
-                          if (p) {
-                            setMailName(p.recipient_name || '')
-                            setMailAddress(p.facility_address || '')
-                            setMailPhone(p.phone || '')
-                            setSelectedPickupPoint(p)
-                          }
-                        } catch (err) {
-                          console.error(err)
-                        }
-                      } else {
-                        const p = ownerPickupPoints.find((x: any) => x.id === j.pickup_point_id)
-                        if (p) {
-                          setMailName(p.recipient_name || '')
-                          setMailAddress(p.facility_address || '')
-                          setMailPhone(p.phone || '')
-                          setSelectedPickupPoint(p)
-                        }
-                      }
-                    }
-                  }
-                } catch (err) {
-                  console.error(err)
-                  alert('送り状発行中にエラー')
-                }
-              }}>送り状を発行する</button>
-            </div>
-            <div style={{ display: 'flex', gap: 12, alignItems: 'center', marginBottom: 8 }}>
-              <div style={{ flex: 1 }}>
-                <div style={{ fontWeight: 700 }}>持ち主の登録済み届出先</div>
-                {ownerPickupPoints === null && <div className="small-muted">読み込み中…</div>}
-                {ownerPickupPoints && ownerPickupPoints.length === 0 && <div className="small-muted">登録済みの届出住所がありません。持ち主に登録してもらってください。</div>}
-                {ownerPickupPoints && ownerPickupPoints.length > 0 && (
-                  <select value={selectedPickupPoint ? selectedPickupPoint.id : ''} onChange={(e) => {
-                    const id = e.target.value
-                    const p = (ownerPickupPoints || []).find((x: any) => x.id === id) || null
-                    setSelectedPickupPoint(p)
-                    if (p) {
-                      setMailName(p.recipient_name || '')
-                      setMailAddress(p.facility_address || '')
-                      setMailPhone(p.phone || '')
-                    }
-                  }} style={{ padding: 10, borderRadius: 8, border: '1px solid #e6e6e6', width: '100%' }}>
-                    {(ownerPickupPoints || []).map((p: any) => <option key={p.id} value={p.id}>{p.facility_name || p.facility_address || p.recipient_name}</option>)}
-                  </select>
-                )}
-              </div>
-            </div>
-
-            <label style={{ fontWeight: 600, marginBottom: 6 }}>送り先氏名（局留め先・受取人）</label>
-            <input value={mailName} readOnly placeholder="受取人氏名" style={{ padding: 10, borderRadius: 8, border: '1px solid #e6e6e6', width: '100%', background: '#fbfbfb' }} />
-            <label style={{ fontWeight: 600, marginBottom: 6 }}>住所（郵送先）</label>
-            <input value={mailAddress} readOnly placeholder="住所" style={{ padding: 10, borderRadius: 8, border: '1px solid #e6e6e6', width: '100%', background: '#fbfbfb' }} />
-            <label style={{ fontWeight: 600, marginBottom: 6 }}>電話番号（任意）</label>
-            <input value={mailPhone} readOnly placeholder="電話番号" style={{ padding: 10, borderRadius: 8, border: '1px solid #e6e6e6', width: '100%', background: '#fbfbfb' }} />
-          </>
-        )}
+        {/* 郵送フローは別ページへ移動しました */}
 
         {method !== 'mail' && (
           <textarea value={memo} onChange={(e) => setMemo(e.target.value)} placeholder="メモ (任意)" style={{ padding: 8, borderRadius: 6, border: '1px solid #ccc' }} rows={3} />
