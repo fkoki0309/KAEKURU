@@ -2,7 +2,7 @@
 import React from 'react'
 import { useRouter } from 'next/navigation'
 
-export default function OwnerNav({ ownerId, itemName }: { ownerId: string; itemName: string | null }) {
+export default function OwnerNav({ ownerId, account }: { ownerId: string; account: string | null }) {
   const router = useRouter()
 
   async function logout() {
@@ -13,7 +13,7 @@ export default function OwnerNav({ ownerId, itemName }: { ownerId: string; itemN
 
   return (
     <header className="app-header">
-      <span className="small-muted">ログイン中{itemName ? `: ${itemName}` : ''}</span>
+      <span className="small-muted">ログイン中{account ? `: ${account}` : ''}</span>
       <nav>
         <a href={`/owner/${ownerId}`}>マイページ</a>
         <a href={`/owner/${ownerId}/notifications`}>通知</a>

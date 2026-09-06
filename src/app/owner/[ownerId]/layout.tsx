@@ -23,7 +23,7 @@ export default function OwnerLayout({
 
   return (
     <div>
-      <OwnerNav ownerId={owner.id} itemName={owner.item_name ?? null} />
+      <OwnerNav ownerId={owner.id} account={owner.email ?? null} />
       {children}
     </div>
   )
