@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import * as mockDb from '../../lib/mockDb'
+import * as mockDb from '../../../lib/mockDb'
 
 export async function GET(request: Request) {
   try {
