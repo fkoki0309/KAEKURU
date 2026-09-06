@@ -1,11 +1,12 @@
 "use client"
 import React, { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
+import styles from './page.module.css'
 
 export default function HomePage() {
   const router = useRouter()
 
-  // undefined = 確認中, null = 未ログイン, string = ログイン中の owner id
+  // undefined = 確認中 / null = 未ログイン / string = ログイン中の owner id
   const [ownerId, setOwnerId] = useState<string | null | undefined>(undefined)
   useEffect(() => {
     let cancelled = false
@@ -26,61 +27,91 @@ export default function HomePage() {
   }
 
   return (
-    <div className="container stack">
-      <div className="card stack">
-        <div className="stack-sm">
-          <h1 className="page-title" style={{ margin: 0 }}>KAEKURU</h1>
-          <p className="muted" style={{ margin: 0 }}>
-            QRシールで、落とし物が持ち主に戻る。拾った人は匿名のまま、持ち主は個人情報を渡さずに受け取れます。
-          </p>
-        </div>
-      </div>
+    <div className={styles.page}>
+      <div className={styles.topRule} />
+      <div className={styles.wrap}>
+        <a href="/" className={styles.wordmark}>KAEKURU</a>
 
-      <div className="card stack">
-        <h2 className="section-title" style={{ margin: 0 }}>持ち主の方</h2>
-        <p className="small-muted" style={{ margin: 0 }}>
-          シールを持ち物に貼って登録。落とし物の通知を受け取り、受け取り確認と報酬の送金を行います。
+        <h1 className={styles.hero}>
+          落とし物が、
+          <br />
+          持ち主のもとへ帰る。
+        </h1>
+
+        <p className={styles.lede}>
+          QRシールを貼っておくだけ。拾った人は匿名のまま届け出て、
+          持ち主は住所や連絡先を明かさずに受け取れます。
         </p>
-        <div className="row">
-          {ownerId ? (
-            <a href={`/owner/${ownerId}`} className="button primary">マイページへ</a>
-          ) : (
-            <a href="/owner/login" className="button primary">ログイン</a>
+
+        <div className={styles.paths}>
+          <div className={styles.path}>
+            <div className={styles.pathLabel}>持ち主の方</div>
+            <p className={styles.pathText}>
+              シールを登録し、落とし物の通知を受け取ります。受け取り確認とお礼の送金まで。
+            </p>
+            {ownerId ? (
+              <a href={`/owner/${ownerId}`} className={styles.cta}>
+                マイページへ <span aria-hidden>→</span>
+              </a>
+            ) : (
+              <a href="/owner/login" className={styles.cta}>
+                ログイン <span aria-hidden>→</span>
+              </a>
+            )}
+          </div>
+
+          <div className={styles.path}>
+            <div className={styles.pathLabel}>拾った方 — ログイン不要</div>
+            <p className={styles.pathText}>
+              シールのQRを読み取ると届け出フォームが開きます。読み取れないときは記載のコードを入力してください。
+            </p>
+            <form onSubmit={goToTag} className={styles.codeForm}>
+              <input
+                className={styles.codeInput}
+                value={code}
+                onChange={(e) => setCode(e.target.value)}
+                placeholder="demo-token-123"
+                aria-label="シールのコード"
+              />
+              <button type="submit" className={styles.cta} disabled={!code.trim()}>
+                届け出る <span aria-hidden>→</span>
+              </button>
+            </form>
+          </div>
+        </div>
+
+        <div className={styles.stepsHead}>使い方</div>
+        <ol className={styles.steps}>
+          <li className={styles.step}>
+            <span className={styles.stepNum}>01</span>
+            <span>シールを持ち物に貼り、アプリで登録する</span>
+          </li>
+          <li className={styles.step}>
+            <span className={styles.stepNum}>02</span>
+            <span>持ち物をなくす</span>
+          </li>
+          <li className={styles.step}>
+            <span className={styles.stepNum}>03</span>
+            <span>拾った人がQRを読み取り、手渡し / 郵送を選んで届け出る</span>
+          </li>
+          <li className={styles.step}>
+            <span className={styles.stepNum}>04</span>
+            <span>持ち主に通知が届き、受け取る</span>
+          </li>
+          <li className={styles.step}>
+            <span className={styles.stepNum}>05</span>
+            <span>受け取り確認をすると、相手がログイン済みならお礼が送られる</span>
+          </li>
+        </ol>
+
+        <div className={styles.footer}>
+          KAEKURU — モック環境
+          {ownerId === null && (
+            <>
+              （<code>test</code> / <code>test</code> でログイン）
+            </>
           )}
         </div>
-        {ownerId === null && (
-          <p className="small-muted" style={{ margin: 0 }}>
-            モック環境です。<code>test</code> / <code>test</code> でログインできます。
-          </p>
-        )}
-      </div>
-
-      <div className="card stack">
-        <h2 className="section-title" style={{ margin: 0 }}>拾った方（ログイン不要）</h2>
-        <p className="small-muted" style={{ margin: 0 }}>
-          シールのQRコードを読み取ると、届け出フォームが開きます。QRが読み取れないときは、シールに記載のコードを入力してください。
-        </p>
-        <form onSubmit={goToTag} className="row">
-          <input
-            value={code}
-            onChange={(e) => setCode(e.target.value)}
-            placeholder="例: demo-token-123"
-            aria-label="シールのコード"
-            style={{ maxWidth: 280 }}
-          />
-          <button type="submit" className="button" disabled={!code.trim()}>届け出フォームへ</button>
-        </form>
-      </div>
-
-      <div className="card stack">
-        <h2 className="section-title" style={{ margin: 0 }}>使い方</h2>
-        <ol className="stack-sm" style={{ margin: 0, paddingLeft: 20 }}>
-          <li>持ち主がシールを持ち物に貼り、アプリで登録する</li>
-          <li>持ち物をなくす</li>
-          <li>拾った人がQRを読み取り、届け方（手渡し / 郵送）を選んで届け出る</li>
-          <li>持ち主に通知が届き、受け取る</li>
-          <li>受け取り確認をすると、拾った人がログイン済みなら報酬が送られる</li>
-        </ol>
       </div>
     </div>
   )
