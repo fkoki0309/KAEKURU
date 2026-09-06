@@ -11,7 +11,7 @@ export async function GET(request: Request, { params }: { params: { token: strin
       if (!tag) return NextResponse.json({ error: 'not found' }, { status: 404 })
       if (tag.status === 'unactivated') return NextResponse.json({ status: 'unactivated' })
       const owner = mockDb.getOwnerByTagId(tag.id)
-      return NextResponse.json({ status: 'active', tagId: tag.id, item_name: owner?.item_name ?? null })
+      return NextResponse.json({ status: 'active', tagId: tag.id, owner_id: owner?.id ?? null, item_name: owner?.item_name ?? null })
     }
 
     if (!prisma) return NextResponse.json({ error: 'Prisma client not initialized. Run `npx prisma generate`.' }, { status: 500 })
@@ -24,7 +24,7 @@ export async function GET(request: Request, { params }: { params: { token: strin
     // active
     // Optionally fetch the current owner
     const owner = await prisma.tag_owners.findFirst({ where: { tag_id: tag.id, unlinked_at: null } })
-    return NextResponse.json({ status: 'active', tagId: tag.id, item_name: owner?.item_name ?? null })
+    return NextResponse.json({ status: 'active', tagId: tag.id, owner_id: owner?.id ?? null, item_name: owner?.item_name ?? null })
   } catch (err) {
     console.error(err)
     return NextResponse.json({ error: 'server error' }, { status: 500 })

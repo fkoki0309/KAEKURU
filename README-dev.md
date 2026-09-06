@@ -34,3 +34,7 @@ curl http://localhost:3000/a/demo-token-123
 curl -X POST http://localhost:3000/api/tags/activate -H "Content-Type: application/json" -H "x-sample-user-id: mock-user" -d '{"token":"demo-token-123","item_name":"My Mug"}'
 ```
 
+Prisma 初期化エラー
+- `@prisma/client did not initialize yet` というエラーが出た場合、`npx prisma generate` を実行してクライアントを生成してください。
+- もし `DATABASE_URL` を設定しているが `npx prisma generate` をまだ実行していない場合、API ルートは明示的なエラーを返します。
+
