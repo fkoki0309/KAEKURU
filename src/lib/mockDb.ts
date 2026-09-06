@@ -3,7 +3,8 @@ import fs from 'fs'
 import path from 'path'
 
 type Tag = { id: string; token: string; status: 'unactivated' | 'active' }
-type Owner = { id: string; tag_id: string; item_name?: string }
+type Owner = { id: string; tag_id: string | null; item_name?: string; email?: string; password?: string }
+type Session = { token: string; owner_id: string; created_at: string }
 
 // Safety: in production we must not use the mock DB. Fail fast if this module
 // is accidentally imported in a production environment without a real DB.
@@ -19,6 +20,7 @@ const _globalStore: any = (globalThis as any)[_GLOBAL_MOCK_KEY] || ((globalThis 
   pickupPoints: new Map<string, any>(),
   notifications: new Map<string, any[]>(),
   rewards: new Map<string, any>(),
+  sessions: new Map<string, Session>(),
   tokenToOwner: new Map<string, string>(),
 })
 
@@ -28,6 +30,7 @@ const returnCases: Map<string, any> = _globalStore.returnCases
 const pickupPoints: Map<string, any> = _globalStore.pickupPoints
 const notifications: Map<string, any[]> = _globalStore.notifications
 const rewards: Map<string, any> = _globalStore.rewards
+const sessions: Map<string, Session> = _globalStore.sessions
 
 // Persist mock state to a tmp JSON file so separate Next.js route modules
 // (dev mode) can share state reliably.
@@ -44,6 +47,7 @@ function loadMockFile() {
     returnCases.clear()
     pickupPoints.clear()
     notifications.clear()
+    sessions.clear()
     _globalStore.tokenToOwner = new Map<string, string>()
 
     for (const t of data.tags || []) tags.set(t.token, t)
@@ -52,6 +56,7 @@ function loadMockFile() {
     for (const pp of data.pickupPoints || []) pickupPoints.set(pp.id, pp)
     for (const [ownerId, arr] of (data.notifications || [])) notifications.set(ownerId, arr)
     for (const r of (data.rewards || [])) rewards.set(r.id, r)
+    for (const s of (data.sessions || [])) sessions.set(s.token, s)
     for (const [tok, ownerId] of (data.tokenToOwner || [])) _globalStore.tokenToOwner.set(tok, ownerId)
   } catch (e) {
     console.warn('mockDb: failed to load mock file', e)
@@ -68,6 +73,7 @@ function saveMockFile() {
       pickupPoints: Array.from(pickupPoints.values()),
       notifications: Array.from(notifications.entries()),
       rewards: Array.from(rewards.values()),
+      sessions: Array.from(sessions.values()),
       tokenToOwner: Array.from((_globalStore.tokenToOwner || new Map()).entries()),
     }
     fs.writeFileSync(MOCK_DB_FILE, JSON.stringify(payload, null, 2), 'utf8')
@@ -317,6 +323,55 @@ export function createNotificationForOwner(ownerId: string, payload: any) {
 
 export function getNotificationsForOwner(ownerId: string) {
   return (notifications.get(ownerId) ?? []).slice()
+}
+
+// --- Owner authentication (mock only) ---------------------------------------
+// Passwords are stored in plain text here on purpose: this module is a local
+// development stand-in and never runs in production (guarded at the top).
+
+export function getOwnerByEmail(email: string) {
+  const needle = email.trim().toLowerCase()
+  for (const o of owners.values()) {
+    if ((o.email ?? '').toLowerCase() === needle) return o
+  }
+  return null
+}
+
+export function createOwnerAccount({ email, password, item_name, id }: { email: string; password: string; item_name?: string; id?: string }) {
+  const existing = getOwnerByEmail(email)
+  if (existing) return { status: 200 as const, owner: existing }
+  const ownerId = id ?? `owner-${Math.random().toString(36).slice(2, 10)}`
+  const o: Owner = { id: ownerId, tag_id: null, item_name, email, password }
+  owners.set(ownerId, o)
+  saveMockFile()
+  return { status: 201 as const, owner: o }
+}
+
+export function verifyOwnerCredentials(email: string, password: string) {
+  const o = getOwnerByEmail(email)
+  if (!o) return { status: 404 as const, owner: null }
+  if (o.password !== password) return { status: 401 as const, owner: null }
+  return { status: 200 as const, owner: o }
+}
+
+export function createSession(ownerId: string) {
+  const token = `sess-${Math.random().toString(36).slice(2, 12)}${Math.random().toString(36).slice(2, 12)}`
+  const s: Session = { token, owner_id: ownerId, created_at: new Date().toISOString() }
+  sessions.set(token, s)
+  saveMockFile()
+  return { token, session: s }
+}
+
+export function getOwnerBySession(token: string | null | undefined) {
+  if (!token) return null
+  const s = sessions.get(token)
+  if (!s) return null
+  return owners.get(s.owner_id) ?? null
+}
+
+export function deleteSession(token: string | null | undefined) {
+  if (!token) return
+  if (sessions.delete(token)) saveMockFile()
 }
 
 // seed a demo tag on module load for convenience
