@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 // NOTE: This is a sample implementation. Adapt to your auth and DB setup.
-import { prisma } from '@/lib/prisma' // assume prisma client is exposed
-import * as mockDb from '@/lib/mockDb'
+import { prisma } from '../../../../lib/prisma' // assume prisma client is exposed
+import * as mockDb from '../../../../lib/mockDb'
 
 export async function POST(request: Request) {
   try {
@@ -9,7 +9,11 @@ export async function POST(request: Request) {
     const { token, item_name, item_photo_url } = body
 
     // TODO: validate authentication (e.g. Supabase JWT) and get userId
-    const userId = (request.headers.get('x-sample-user-id') || null)
+    let userId = request.headers.get('x-sample-user-id') || null
+    // In mock/dev mode, allow missing header and synthesize a mock user
+    if (!userId && !process.env.DATABASE_URL) {
+      userId = 'mock-user'
+    }
     if (!userId) return NextResponse.json({ error: 'unauthenticated' }, { status: 401 })
 
     if (!token) return NextResponse.json({ error: 'token required' }, { status: 400 })
@@ -20,6 +24,11 @@ export async function POST(request: Request) {
       if (res.status === 404) return NextResponse.json({ error: 'not found' }, { status: 404 })
       if (res.status === 409) return NextResponse.json({ error: 'already activated' }, { status: 409 })
       return NextResponse.json({ ok: true, tag: res.tag, owner: res.owner })
+    }
+
+    // If DATABASE_URL is set but Prisma client failed to initialize, return error
+    if (!prisma) {
+      return NextResponse.json({ error: 'Prisma client not initialized. Run `npx prisma generate`.' }, { status: 500 })
     }
 
     // Transaction: check tag status and create owner relation atomically

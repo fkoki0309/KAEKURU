@@ -1,0 +1,295 @@
+{
+  "tags": [
+    {
+      "id": "mock-dyzlut3q",
+      "token": "demo-token-123",
+      "status": "unactivated"
+    },
+    {
+      "id": "mock-jpghxqzs",
+      "token": "demo-token-activated",
+      "status": "active"
+    }
+  ],
+  "owners": [
+    {
+      "id": "owner-1o4gb4el",
+      "tag_id": "mock-6oivja1m",
+      "item_name": "My Mug"
+    },
+    {
+      "id": "owner-fg7jmsfw",
+      "tag_id": "mock-1xaw7fzy",
+      "item_name": "My Mug"
+    },
+    {
+      "id": "owner-68rcvplr",
+      "tag_id": "mock-dvuyt1xh",
+      "item_name": "My Mug"
+    },
+    {
+      "id": "owner-vuk6ixxz",
+      "tag_id": "mock-6x3niyls",
+      "item_name": "My Mug"
+    },
+    {
+      "id": "owner-1nwpiebm",
+      "tag_id": "mock-6a7g96q9",
+      "item_name": "My Mug"
+    },
+    {
+      "id": "owner-47ncj99e",
+      "tag_id": "mock-d5oves1x",
+      "item_name": "My Mug"
+    },
+    {
+      "id": "owner-mpynrxsk",
+      "tag_id": "mock-uf1nyubj",
+      "item_name": "My Mug"
+    },
+    {
+      "id": "owner-zwnhskq4",
+      "tag_id": "mock-h8iaqorv",
+      "item_name": "Test Item"
+    },
+    {
+      "id": "owner-og7awpw9",
+      "tag_id": "mock-autfmiw1",
+      "item_name": "財布"
+    }
+  ],
+  "returnCases": [
+    {
+      "id": "rc-40mxi337",
+      "tag_id": "mock-e0ivv4dw",
+      "method": "dropoff",
+      "dropoff_location": null,
+      "pickup_point_id": null,
+      "case_code": "FND-DSD1H",
+      "finder_photo_url": "/uploads/1788642740099-rhjtve.png",
+      "finder_memo": "発見しました",
+      "found_location": "駅前",
+      "finder_user_id": null,
+      "status": "submitted",
+      "shipped_at": null,
+      "received_at": null,
+      "expires_at": null,
+      "created_at": "2026-09-05T21:12:20.100Z"
+    },
+    {
+      "id": "rc-hlpsc194",
+      "tag_id": "mock-1xaw7fzy",
+      "method": "dropoff",
+      "dropoff_location": null,
+      "pickup_point_id": null,
+      "case_code": "FND-E5E7E",
+      "finder_photo_url": "/uploads/1788642770075-00wbx5.png",
+      "finder_memo": "発見しました",
+      "found_location": "駅前",
+      "finder_user_id": null,
+      "status": "submitted",
+      "shipped_at": null,
+      "received_at": null,
+      "expires_at": null,
+      "created_at": "2026-09-05T21:12:50.075Z"
+    },
+    {
+      "id": "rc-8k1xtb60",
+      "tag_id": "mock-dvuyt1xh",
+      "method": "dropoff",
+      "dropoff_location": null,
+      "pickup_point_id": null,
+      "case_code": "FND-DMJBS",
+      "finder_photo_url": "/uploads/1788642820725-jurhuz.png",
+      "finder_memo": "発見しました",
+      "found_location": "駅前",
+      "finder_user_id": null,
+      "status": "submitted",
+      "shipped_at": null,
+      "received_at": null,
+      "expires_at": null,
+      "created_at": "2026-09-05T21:13:40.726Z"
+    },
+    {
+      "id": "rc-7k84ku8o",
+      "tag_id": "mock-dvuyt1xh",
+      "method": "dropoff",
+      "dropoff_location": null,
+      "pickup_point_id": null,
+      "case_code": "FND-IJM90",
+      "finder_photo_url": "/uploads/1788642845554-48eb7r.png",
+      "finder_memo": "発見しました",
+      "found_location": "駅前",
+      "finder_user_id": null,
+      "status": "submitted",
+      "shipped_at": null,
+      "received_at": null,
+      "expires_at": null,
+      "created_at": "2026-09-05T21:14:05.554Z"
+    },
+    {
+      "id": "rc-68oa84dk",
+      "tag_id": "mock-6x3niyls",
+      "method": "dropoff",
+      "dropoff_location": null,
+      "pickup_point_id": null,
+      "case_code": "FND-3QOIY",
+      "finder_photo_url": "/uploads/1788643067413-asxjq6.png",
+      "finder_memo": "発見しました",
+      "found_location": "駅前",
+      "finder_user_id": null,
+      "status": "submitted",
+      "shipped_at": null,
+      "received_at": null,
+      "expires_at": null,
+      "created_at": "2026-09-05T21:17:47.413Z"
+    },
+    {
+      "id": "rc-uclt1aaz",
+      "tag_id": "mock-6x3niyls",
+      "method": "dropoff",
+      "dropoff_location": null,
+      "pickup_point_id": null,
+      "case_code": "FND-FQUB6",
+      "finder_photo_url": "/uploads/1788643084823-48sfpu.png",
+      "finder_memo": "発見しました",
+      "found_location": "駅前",
+      "finder_user_id": null,
+      "status": "submitted",
+      "shipped_at": null,
+      "received_at": null,
+      "expires_at": null,
+      "created_at": "2026-09-05T21:18:04.824Z"
+    },
+    {
+      "id": "rc-rni25fs5",
+      "tag_id": "mock-autfmiw1",
+      "method": "dropoff",
+      "dropoff_location": "駅の交番",
+      "pickup_point_id": null,
+      "case_code": "FND-KZUYG",
+      "finder_photo_url": null,
+      "finder_memo": "交番へ届けました",
+      "found_location": null,
+      "finder_user_id": null,
+      "status": "submitted",
+      "shipped_at": null,
+      "received_at": null,
+      "expires_at": null,
+      "created_at": "2026-09-05T21:41:16.655Z",
+      "finder_info": {
+        "name": "拾得者 太郎",
+        "email": "finder@example.com",
+        "phone": "090-0000-0000"
+      }
+    },
+    {
+      "id": "rc-65ourrea",
+      "tag_id": "mock-32sckf4h",
+      "method": "mail",
+      "dropoff_location": null,
+      "pickup_point_id": null,
+      "case_code": "FND-HG8ZU",
+      "finder_photo_url": null,
+      "finder_memo": null,
+      "found_location": null,
+      "finder_user_id": null,
+      "status": "submitted",
+      "shipped_at": null,
+      "received_at": null,
+      "expires_at": null,
+      "created_at": "2026-09-06T02:26:26.075Z"
+    }
+  ],
+  "pickupPoints": [
+    {
+      "id": "opp-9iap7bx1",
+      "owner_id": "owner-47ncj99e",
+      "carrier": "japan_post",
+      "facility_name": "渋谷郵便局",
+      "facility_address": "渋谷区○○ 1-2-3",
+      "recipient_name": "山田 太郎",
+      "created_at": "2026-09-05T21:23:20.828Z"
+    },
+    {
+      "id": "opp-g03hzu1g",
+      "owner_id": "owner-mpynrxsk",
+      "carrier": "japan_post",
+      "facility_name": "渋谷郵便局",
+      "facility_address": "渋谷区○○ 1-2-3",
+      "recipient_name": "山田 太郎",
+      "created_at": "2026-09-05T21:24:18.002Z"
+    },
+    {
+      "id": "opp-26ipsmiu",
+      "owner_id": "owner-zwnhskq4",
+      "carrier": "japan_post",
+      "facility_name": "",
+      "facility_address": "住所のみ",
+      "recipient_name": "山田",
+      "created_at": "2026-09-05T21:26:37.431Z"
+    },
+    {
+      "id": "opp-e5nswha7",
+      "owner_id": "owner-zwnhskq4",
+      "carrier": "yamato",
+      "facility_name": "新宿郵便局",
+      "facility_address": "新宿区1-2-3",
+      "recipient_name": "田中",
+      "created_at": "2026-09-05T21:26:37.441Z"
+    }
+  ],
+  "notifications": [
+    [
+      "owner-vuk6ixxz",
+      [
+        {
+          "id": "nt-d0gdxl0h",
+          "owner_id": "owner-vuk6ixxz",
+          "return_case_id": "rc-uclt1aaz",
+          "message": "Your item (My Mug) was reported found (case FND-FQUB6).",
+          "read": false,
+          "created_at": "2026-09-05T21:18:04.824Z"
+        }
+      ]
+    ],
+    [
+      "owner-og7awpw9",
+      [
+        {
+          "id": "nt-2nf3xjds",
+          "owner_id": "owner-og7awpw9",
+          "return_case_id": "rc-65ourrea",
+          "message": "Your item (財布) was reported found (case FND-HG8ZU).",
+          "read": false,
+          "created_at": "2026-09-06T02:26:26.075Z"
+        },
+        {
+          "id": "nt-p7pw0kn1",
+          "owner_id": "owner-og7awpw9",
+          "return_case_id": "rc-rni25fs5",
+          "message": "Your item (財布) was reported found (case FND-KZUYG).",
+          "read": false,
+          "created_at": "2026-09-05T21:41:16.655Z"
+        }
+      ]
+    ]
+  ],
+  "rewards": [
+    {
+      "id": "rw-d12did56",
+      "return_case_id": "rc-rni25fs5",
+      "owner_id": "owner-og7awpw9",
+      "amount": 1000,
+      "status": "pending",
+      "created_at": "2026-09-05T21:41:38.953Z",
+      "paid_at": null
+    }
+  ],
+  "tokenToOwner": [
+    [
+      "demo-token-123",
+      "owner-og7awpw9"
+    ]
+  ]
+}
