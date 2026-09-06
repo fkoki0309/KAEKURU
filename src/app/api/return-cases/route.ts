@@ -1,47 +1,27 @@
 import { NextResponse } from 'next/server'
 import * as mockDb from '../../../lib/mockDb'
 import { prisma } from '../../../lib/prisma'
-import fs from 'fs/promises'
-import path from 'path'
 
-async function saveBase64ToUploads(data: string) {
-  const match = data.match(/^data:(image\/[^;]+);base64,(.+)$/)
-  let ext = 'bin'
-  let b64 = data
-  if (match) {
-    const mime = match[1]
-    b64 = match[2]
-    ext = mime.split('/')[1]
-  }
-  const uploadsDir = path.join(process.cwd(), 'public', 'uploads')
-  await fs.mkdir(uploadsDir, { recursive: true })
-  const fileName = `${Date.now()}-${Math.random().toString(36).slice(2,8)}.${ext}`
-  const filePath = path.join(uploadsDir, fileName)
-  const buf = Buffer.from(b64, 'base64')
-  await fs.writeFile(filePath, buf)
-  return `/uploads/${fileName}`
-}
-
+// The finder uploads any photo via POST /api/uploads first and sends the
+// resulting finder_photo_url here.
 export async function POST(request: Request) {
   try {
     const body = await request.json()
-    const { token, method, dropoff_location, finder_photo_url, finder_photo, finder_memo, found_location, finder_user_id } = body
+    const { token, method, dropoff_location, finder_photo_url, finder_memo, found_location, finder_user_id } = body
 
     if (!token) return NextResponse.json({ error: 'token required' }, { status: 400 })
 
-    // If finder_photo (base64 or data URL) is provided, save it and set finder_photo_url
-    let photoUrl = finder_photo_url
-    if (!photoUrl && finder_photo) {
-      try {
-        photoUrl = await saveBase64ToUploads(finder_photo)
-      } catch (e) {
-        console.error('failed to save photo', e)
-      }
-    }
-
     // Mock mode
     if (!process.env.DATABASE_URL) {
-      const res = mockDb.createReturnCase({ token, method, dropoff_location, finder_photo_url: photoUrl, finder_memo, found_location, finder_user_id })
+      const res = mockDb.createReturnCase({
+        token,
+        method,
+        dropoff_location,
+        finder_photo_url,
+        finder_memo,
+        found_location,
+        finder_user_id,
+      })
       if (res.status === 404) return NextResponse.json({ error: 'tag not found' }, { status: 404 })
       return NextResponse.json({ ok: true, return_case: res.return_case })
     }
@@ -51,12 +31,28 @@ export async function POST(request: Request) {
     // Real DB path
     const tag = await prisma.tags.findUnique({ where: { token } })
     if (!tag) return NextResponse.json({ error: 'tag not found' }, { status: 404 })
+
+    // For mail, resolve the owner's pickup point on the server — never trust a
+    // client-supplied pickup_point_id.
+    let pickup_point_id: string | null = null
+    if (method === 'mail') {
+      const owner = await prisma.tag_owners.findFirst({ where: { tag_id: tag.id, unlinked_at: null } })
+      const pp = owner
+        ? await prisma.owner_pickup_points.findFirst({
+            where: { user_id: owner.user_id },
+            orderBy: { created_at: 'desc' },
+          })
+        : null
+      pickup_point_id = pp?.id ?? null
+    }
+
     const rc = await prisma.return_cases.create({
       data: {
         tag_id: tag.id,
         method,
         dropoff_location: dropoff_location ?? null,
-        finder_photo_url: photoUrl ?? null,
+        pickup_point_id,
+        finder_photo_url: finder_photo_url ?? null,
         finder_memo: finder_memo ?? null,
         found_location: found_location ?? null,
         finder_user_id: finder_user_id ?? null,

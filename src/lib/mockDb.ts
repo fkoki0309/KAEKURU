@@ -204,17 +204,45 @@ export function getOwnerByToken(token: string) {
   return owners.get(ownerId) ?? null
 }
 
+// What a finder is allowed to see about the anonymous mail destination for a
+// token: the pickup point's public fields only (局名・住所・受取人名). Never the
+// pickup point id, phone number, or any owner reference.
+export function getShippingDestinationForToken(token: string) {
+  const tag = tags.get(token)
+  if (!tag || tag.status !== 'active') return null
+  const owner = getOwnerByToken(token) ?? getOwnerByTagId(tag.id)
+  if (!owner) return null
+  const pp = listOwnerPickupPoints(owner.id)[0]
+  if (!pp) return null
+  return {
+    carrier: pp.carrier ?? null,
+    address_label: pp.facility_name ? `${pp.facility_name} 留め` : null,
+    facility_name: pp.facility_name ?? null,
+    facility_address: pp.facility_address ?? null,
+    recipient_name: pp.recipient_name ?? null,
+  }
+}
+
 export function createReturnCase({ token, method, dropoff_location, finder_photo_url, finder_memo, found_location, finder_user_id }: any) {
   const tag = tags.get(token)
   if (!tag) return { status: 404 }
   const id = `rc-${Math.random().toString(36).slice(2, 10)}`
   const case_code = `FND-${Math.random().toString(36).slice(2, 7).toUpperCase()}`
+
+  // For mail, the server resolves the owner's registered pickup point — the
+  // finder never picks it (and never receives its id).
+  let pickup_point_id: string | null = null
+  if (method === 'mail') {
+    const owner = getOwnerByToken(token) ?? getOwnerByTagId(tag.id)
+    pickup_point_id = (owner ? listOwnerPickupPoints(owner.id)[0]?.id : null) ?? null
+  }
+
   const rc = {
     id,
     tag_id: tag.id,
     method,
     dropoff_location: dropoff_location ?? null,
-    pickup_point_id: null,
+    pickup_point_id,
     case_code,
     finder_photo_url: finder_photo_url ?? null,
     finder_memo: finder_memo ?? null,
