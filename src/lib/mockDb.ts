@@ -15,8 +15,13 @@ type Session = { token: string; owner_id: string; created_at: string }
 
 // Safety: in production we must not use the mock DB. Fail fast if this module
 // is accidentally imported in a production environment without a real DB.
-if (process.env.NODE_ENV === 'production' && !process.env.DATABASE_URL) {
-  throw new Error('mockDb must not be used in production — set DATABASE_URL and use the real DB')
+// `ALLOW_MOCK_DB=1` opts back in for a production build of the demo.
+if (
+  process.env.NODE_ENV === 'production' &&
+  !process.env.DATABASE_URL &&
+  !process.env.ALLOW_MOCK_DB
+) {
+  throw new Error('mockDb must not be used in production — set DATABASE_URL, or ALLOW_MOCK_DB=1 for a demo build')
 }
 
 const _GLOBAL_MOCK_KEY = '__kaekuru_mock_db__'

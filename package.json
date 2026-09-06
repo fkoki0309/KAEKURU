@@ -6,6 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
+    "demo:build": "ALLOW_MOCK_DB=1 next build",
+    "demo": "ALLOW_MOCK_DB=1 next start -H 0.0.0.0 -p 3000",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev --name init"
   },

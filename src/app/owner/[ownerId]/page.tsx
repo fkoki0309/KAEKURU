@@ -1,5 +1,6 @@
 "use client"
 import React, { useEffect, useState } from 'react'
+import Link from 'next/link'
 import { useParams, useRouter } from 'next/navigation'
 import Screen from '../../_components/Screen'
 
@@ -58,7 +59,7 @@ export default function OwnerDashboardPage() {
     <Screen
       title="マイページ"
       action={
-        <a href={`/owner/${ownerId}/items/new`} className="button primary">＋ 持ち物を登録</a>
+        <Link href={`/owner/${ownerId}/items/new`} className="button primary">＋ 持ち物を登録</Link>
       }
     >
       <div className="stack-sm">
@@ -78,7 +79,7 @@ export default function OwnerDashboardPage() {
             </div>
             <div className="small-muted">{CASE_LABEL[it.latest_case_status] ?? it.latest_case_status}</div>
             <div className="row">
-              <a href={`/owner/${ownerId}/notifications?tag=${it.tag_id}`} className="button">この持ち物の通知</a>
+              <Link href={`/owner/${ownerId}/notifications?tag=${it.tag_id}`} className="button">この持ち物の通知</Link>
             </div>
           </div>
         ))}
@@ -87,8 +88,8 @@ export default function OwnerDashboardPage() {
       <div className="stack-sm">
         <h2 className="section-title">アカウント</h2>
         <div className="row">
-          <a href={`/owner/${ownerId}/pickup-points`} className="button">受取拠点</a>
-          <a href={`/owner/${ownerId}/rewards`} className="button">報酬</a>
+          <Link href={`/owner/${ownerId}/pickup-points`} className="button">受取拠点</Link>
+          <Link href={`/owner/${ownerId}/rewards`} className="button">報酬</Link>
         </div>
       </div>
     </Screen>

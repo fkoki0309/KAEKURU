@@ -1,5 +1,6 @@
 "use client"
 import React, { useState } from 'react'
+import Link from 'next/link'
 import { useParams, useSearchParams } from 'next/navigation'
 import Screen from '../../../../_components/Screen'
 
@@ -86,14 +87,14 @@ export default function RegisterItemPage() {
               拾得者が「郵送」を選んだときの局留め先です。あとで登録もできます。
             </p>
             <div className="row">
-              <a href={`/owner/${ownerId}/pickup-points`} className="button primary">受取拠点を登録</a>
-              <a href={`/owner/${ownerId}`} className="button">あとで</a>
+              <Link href={`/owner/${ownerId}/pickup-points`} className="button primary">受取拠点を登録</Link>
+              <Link href={`/owner/${ownerId}`} className="button">あとで</Link>
             </div>
           </div>
         )}
         {!isFirst && (
           <div className="row">
-            <a href={`/owner/${ownerId}`} className="button primary">マイページに戻る</a>
+            <Link href={`/owner/${ownerId}`} className="button primary">マイページに戻る</Link>
           </div>
         )}
       </Screen>
