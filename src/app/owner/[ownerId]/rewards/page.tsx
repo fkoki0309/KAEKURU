@@ -1,12 +1,15 @@
 "use client"
-import { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 
 export default function OwnerRewardsPage({ params }: { params: { ownerId: string } }) {
   const ownerId = params.ownerId
   const [list, setList] = useState<any[]>([])
   const [loading, setLoading] = useState(false)
 
-  useEffect(() => { fetchList() }, [ownerId])
+  useEffect(() => {
+    fetchList()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ownerId])
 
   async function fetchList() {
     setLoading(true)
@@ -23,19 +26,30 @@ export default function OwnerRewardsPage({ params }: { params: { ownerId: string
   }
 
   return (
-    <div style={{ padding: 20 }}>
-      <h2>報酬一覧</h2>
-      {loading && <div>読み込み中…</div>}
-      <ul>
-        {list.map(r => (
-          <li key={r.id} style={{ marginBottom: 12 }}>
-            <div>金額: ¥{r.amount} — ステータス: {r.status}</div>
-            <div>返却ケース: {r.return_case_id}</div>
-            {r.status !== 'paid' && <button onClick={() => pay(r.id)}>支払済みにする (mock)</button>}
-          </li>
-        ))}
-        {list.length === 0 && <li>報酬はありません</li>}
-      </ul>
+    <div className="container card stack">
+      <h1 className="page-title">報酬一覧</h1>
+
+      {loading && <p className="muted">読み込み中…</p>}
+      {!loading && list.length === 0 && <p className="small-muted">報酬はありません</p>}
+
+      {list.length > 0 && (
+        <ul className="list">
+          {list.map((r) => (
+            <li key={r.id} className="stack-sm">
+              <div className="row">
+                <strong>¥{r.amount}</strong>
+                <span className={`pill ${r.status === 'paid' ? 'pill--paid' : 'pill--pending'}`}>{r.status}</span>
+              </div>
+              <div className="small-muted">返却ケース: {r.return_case_id}</div>
+              {r.status !== 'paid' && (
+                <div className="row">
+                  <button className="button positive" onClick={() => pay(r.id)}>支払済みにする（モック）</button>
+                </div>
+              )}
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   )
 }

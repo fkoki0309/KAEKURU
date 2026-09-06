@@ -22,22 +22,28 @@ export default function OwnerNotificationsPage() {
       .finally(() => setLoading(false))
   }, [ownerId])
 
-  if (!ownerId) return <div>ownerId が指定されていません</div>
+  if (!ownerId) return <div className="container card">ownerId が指定されていません</div>
 
   return (
-    <div style={{ maxWidth: 720, margin: '32px auto', padding: 20, fontFamily: 'system-ui' }}>
-      <h1>通知 — 持ち主: {ownerId}</h1>
-      {loading && <p>読み込み中…</p>}
-      {err && <p style={{ color: 'red' }}>{err}</p>}
-      {!loading && notes && notes.length === 0 && <p>通知はありません</p>}
-      <ul>
-        {notes && notes.map((n) => (
-          <li key={n.id} style={{ borderBottom: '1px solid #eee', padding: '8px 0' }}>
-            <div><strong>{n.message}</strong></div>
-            <div style={{ fontSize: 12, color: '#666' }}>case: {n.return_case_id} — {new Date(n.created_at).toLocaleString()}</div>
-          </li>
-        ))}
-      </ul>
+    <div className="container card stack">
+      <h1 className="page-title">通知</h1>
+
+      {loading && <p className="muted">読み込み中…</p>}
+      {err && <p className="error-text">{err}</p>}
+      {!loading && notes && notes.length === 0 && <p className="small-muted">通知はありません</p>}
+
+      {notes && notes.length > 0 && (
+        <ul className="list">
+          {notes.map((n) => (
+            <li key={n.id}>
+              <div><strong>{n.message}</strong></div>
+              <div className="small-muted">
+                ケース: {n.return_case_id} — {new Date(n.created_at).toLocaleString()}
+              </div>
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   )
 }
