@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
 import TagStatusCard from '../../_components/TagStatusCard'
+import BrandMark from '../../_components/BrandMark'
 import { useTag } from './useTag'
 
 export default function TokenPage() {
@@ -31,7 +32,8 @@ export default function TokenPage() {
 
   return (
     <div className="container card stack">
-      <h1 className="page-title">QRタグ: {token}</h1>
+      <BrandMark height={32} />
+      <h1 className="page-title" style={{ margin: 0 }}>QRタグ: {token}</h1>
 
       {tag.status === 'loading' && <p className="muted">読み込み中…</p>}
 
