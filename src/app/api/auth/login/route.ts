@@ -14,11 +14,11 @@ export async function POST(request: Request) {
       return NextResponse.json({ ok: false, error: 'メールとパスワードを入力してください' }, { status: 400 })
     }
 
-    let owner: { id: string; email?: string; item_name?: string }
+    let owner: { id: string; email?: string }
 
     // Mock shortcut: `test` / `test` always signs in as a stable demo owner.
     if (email === 'test' && password === 'test') {
-      owner = mockDb.createOwnerAccount({ id: DEMO_OWNER_ID, email: 'test', password: 'test', item_name: 'デモの持ち物' }).owner
+      owner = mockDb.createOwnerAccount({ id: DEMO_OWNER_ID, email: 'test', password: 'test' }).owner
     } else {
       const v = mockDb.verifyOwnerCredentials(email, password)
       if (v.status === 404) return NextResponse.json({ ok: false, error: 'アカウントが見つかりません' }, { status: 404 })
@@ -29,7 +29,7 @@ export async function POST(request: Request) {
     const { token } = mockDb.createSession(owner.id)
     const res = NextResponse.json({
       ok: true,
-      owner: { id: owner.id, email: owner.email ?? null, item_name: owner.item_name ?? null },
+      owner: { id: owner.id, email: owner.email ?? null },
     })
     res.cookies.set(SESSION_COOKIE, token, {
       httpOnly: true,

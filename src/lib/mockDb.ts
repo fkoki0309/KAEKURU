@@ -3,7 +3,14 @@ import fs from 'fs'
 import path from 'path'
 
 type Tag = { id: string; token: string; status: 'unactivated' | 'active' }
-type Owner = { id: string; tag_id: string | null; item_name?: string; email?: string; password?: string }
+type Owner = {
+  id: string
+  tag_id: string | null
+  item_name?: string
+  item_photo_url?: string | null
+  email?: string
+  password?: string
+}
 type Session = { token: string; owner_id: string; created_at: string }
 
 // Safety: in production we must not use the mock DB. Fail fast if this module
@@ -171,31 +178,67 @@ export function runExpiryAlerts() {
   return alerted
 }
 
-export function activateTag(token: string, userId: string, item_name?: string, ownerIdToLink?: string | null) {
+export function activateTag(
+  token: string,
+  userId: string,
+  item_name?: string,
+  ownerIdToLink?: string | null,
+  item_photo_url?: string | null,
+) {
   const t = tags.get(token)
-  if (!t) return { status: 404 }
-  if (t.status !== 'unactivated') return { status: 409 }
-  t.status = 'active'
+  if (!t) return { status: 404 as const }
+  if (t.status !== 'unactivated') return { status: 409 as const, reason: 'tag_activated' as const }
 
   // Prefer linking to the logged-in owner so the owner can see the resulting
   // notifications in the UI. Fall back to a fresh owner when unauthenticated.
   let o = ownerIdToLink ? owners.get(ownerIdToLink) : undefined
   if (o) {
+    // Current mock model is one item per owner. Refuse a second rather than
+    // silently overwriting the first (true tag_owners 1:N is a later step).
+    if (o.tag_id && o.tag_id !== t.id) {
+      return { status: 409 as const, reason: 'owner_has_item' as const }
+    }
     o.tag_id = t.id
     if (item_name) o.item_name = item_name
+    if (item_photo_url !== undefined) o.item_photo_url = item_photo_url
   } else {
-    o = { id: `owner-${Math.random().toString(36).slice(2, 10)}`, tag_id: t.id, item_name }
+    o = { id: `owner-${Math.random().toString(36).slice(2, 10)}`, tag_id: t.id, item_name, item_photo_url: item_photo_url ?? null }
   }
+  t.status = 'active'
   owners.set(o.id, o)
   // map token -> owner for cross-instance lookup
   _globalStore.tokenToOwner.set(token, o.id)
   saveMockFile()
-  return { status: 200, tag: t, owner: o }
+  return { status: 200 as const, tag: t, owner: o }
 }
 
 export function getOwnerByTagId(tagId: string) {
   for (const o of owners.values()) if (o.tag_id === tagId) return o
   return null
+}
+
+// The logged-in owner's registered belongings. The current mock links one tag
+// per owner, so this is 0 or 1 entry; it already has the array shape the
+// dashboard and a future tag_owners (1:N) model will use.
+export function listItemsForOwner(ownerId: string) {
+  const owner = owners.get(ownerId)
+  if (!owner || !owner.tag_id) return []
+  const tag = Array.from(tags.values()).find((t) => t.id === owner.tag_id)
+  const notes = notifications.get(ownerId) ?? []
+  const latestCase = Array.from(returnCases.values())
+    .filter((rc) => rc.tag_id === owner.tag_id)
+    .sort((a, b) => (a.created_at < b.created_at ? 1 : -1))[0]
+  return [
+    {
+      tag_id: owner.tag_id,
+      token: tag?.token ?? null,
+      item_name: owner.item_name ?? null,
+      item_photo_url: owner.item_photo_url ?? null,
+      tag_status: tag?.status ?? 'unactivated',
+      unread_notifications: notes.filter((n) => !n.read).length,
+      latest_case_status: (latestCase?.status ?? 'none') as string,
+    },
+  ]
 }
 
 export function getOwnerByToken(token: string) {
