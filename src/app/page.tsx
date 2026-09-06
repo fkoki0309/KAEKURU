@@ -1,23 +1,12 @@
 "use client"
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import styles from './page.module.css'
+import { useCurrentOwnerId } from './_hooks/useCurrentOwnerId'
 
 export default function HomePage() {
   const router = useRouter()
-
-  // undefined = 確認中 / null = 未ログイン / string = ログイン中の owner id
-  const [ownerId, setOwnerId] = useState<string | null | undefined>(undefined)
-  useEffect(() => {
-    let cancelled = false
-    fetch('/api/auth/me')
-      .then((r) => (r.ok ? r.json() : null))
-      .then((j) => !cancelled && setOwnerId(j?.owner?.id ?? null))
-      .catch(() => !cancelled && setOwnerId(null))
-    return () => {
-      cancelled = true
-    }
-  }, [])
+  const ownerId = useCurrentOwnerId()
 
   const [code, setCode] = useState('')
   function goToTag(e: React.FormEvent) {

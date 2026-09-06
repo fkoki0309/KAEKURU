@@ -1,6 +1,7 @@
 "use client"
 import React, { useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
+import Screen from '../../_components/Screen'
 
 type DashboardItem = {
   tag_id: string
@@ -50,31 +51,16 @@ export default function OwnerDashboardPage() {
     }
   }, [ownerId, router])
 
-  if (error) {
-    return (
-      <div className="container card stack">
-        <h1 className="page-title">マイページ</h1>
-        <p className="error-text">{error}</p>
-      </div>
-    )
-  }
-
-  if (items === null) {
-    return (
-      <div className="container card stack">
-        <h1 className="page-title">マイページ</h1>
-        <p className="muted">読み込み中…</p>
-      </div>
-    )
-  }
+  if (error) return <Screen title="マイページ"><p className="error-text">{error}</p></Screen>
+  if (items === null) return <Screen title="マイページ"><p className="muted">読み込み中…</p></Screen>
 
   return (
-    <div className="container card stack">
-      <div className="row-between">
-        <h1 className="page-title" style={{ margin: 0 }}>マイページ</h1>
+    <Screen
+      title="マイページ"
+      action={
         <a href={`/owner/${ownerId}/items/new`} className="button primary">＋ 持ち物を登録</a>
-      </div>
-
+      }
+    >
       <div className="stack-sm">
         <h2 className="section-title">登録した持ち物</h2>
         {items.map((it) => (
@@ -105,6 +91,6 @@ export default function OwnerDashboardPage() {
           <a href={`/owner/${ownerId}/rewards`} className="button">報酬</a>
         </div>
       </div>
-    </div>
+    </Screen>
   )
 }

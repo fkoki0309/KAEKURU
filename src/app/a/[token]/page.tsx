@@ -1,40 +1,25 @@
 "use client"
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import { useParams } from 'next/navigation'
+import Screen from '../../_components/Screen'
 import TagStatusCard from '../../_components/TagStatusCard'
-import BrandMark from '../../_components/BrandMark'
+import { useCurrentOwnerId } from '../../_hooks/useCurrentOwnerId'
 import { useTag } from './useTag'
 
 export default function TokenPage() {
   const params = useParams() as { token?: string }
   const token = params?.token
   const tag = useTag(token)
+  const ownerId = useCurrentOwnerId()
 
-  // undefined = still checking, null = not logged in, string = owner id
-  const [ownerId, setOwnerId] = useState<string | null | undefined>(undefined)
-  useEffect(() => {
-    let cancelled = false
-    fetch('/api/auth/me')
-      .then((r) => (r.ok ? r.json() : null))
-      .then((j) => !cancelled && setOwnerId(j?.owner?.id ?? null))
-      .catch(() => !cancelled && setOwnerId(null))
-    return () => {
-      cancelled = true
-    }
-  }, [])
+  if (!token) return <Screen brand title="QRタグ">トークンが指定されていません</Screen>
 
-  if (!token) return <div className="container card">トークンが指定されていません</div>
-
-  const registerHref =
-    ownerId
-      ? `/owner/${ownerId}/items/new?token=${encodeURIComponent(token)}`
-      : `/owner/login?token=${encodeURIComponent(token)}`
+  const registerHref = ownerId
+    ? `/owner/${ownerId}/items/new?token=${encodeURIComponent(token)}`
+    : `/owner/login?token=${encodeURIComponent(token)}`
 
   return (
-    <div className="container card stack">
-      <BrandMark height={32} />
-      <h1 className="page-title" style={{ margin: 0 }}>QRタグ: {token}</h1>
-
+    <Screen brand title={`QRタグ: ${token}`}>
       {tag.status === 'loading' && <p className="muted">読み込み中…</p>}
 
       {tag.status === 'unactivated' && (
@@ -71,6 +56,6 @@ export default function TokenPage() {
           <p className="small-muted" style={{ margin: 0 }}>{tag.message}</p>
         </div>
       )}
-    </div>
+    </Screen>
   )
 }

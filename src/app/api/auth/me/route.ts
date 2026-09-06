@@ -1,12 +1,8 @@
 import { NextResponse } from 'next/server'
-import { cookies } from 'next/headers'
-import * as mockDb from '../../../../lib/mockDb'
-
-const SESSION_COOKIE = 'kaekuru_session'
+import { currentOwner } from '../../../../lib/session'
 
 export async function GET() {
-  const token = cookies().get(SESSION_COOKIE)?.value
-  const owner = mockDb.getOwnerBySession(token)
+  const owner = currentOwner()
   if (!owner) return NextResponse.json({ ok: false }, { status: 401 })
   return NextResponse.json({
     ok: true,

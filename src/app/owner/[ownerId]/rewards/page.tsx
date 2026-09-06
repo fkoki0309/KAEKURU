@@ -1,5 +1,6 @@
 "use client"
 import React, { useEffect, useState } from 'react'
+import Screen from '../../../_components/Screen'
 
 export default function OwnerRewardsPage({ params }: { params: { ownerId: string } }) {
   const ownerId = params.ownerId
@@ -26,9 +27,7 @@ export default function OwnerRewardsPage({ params }: { params: { ownerId: string
   }
 
   return (
-    <div className="container card stack">
-      <h1 className="page-title">報酬一覧</h1>
-
+    <Screen title="報酬一覧">
       {loading && <p className="muted">読み込み中…</p>}
       {!loading && list.length === 0 && <p className="small-muted">報酬はありません</p>}
 
@@ -50,6 +49,6 @@ export default function OwnerRewardsPage({ params }: { params: { ownerId: string
           ))}
         </ul>
       )}
-    </div>
+    </Screen>
   )
 }

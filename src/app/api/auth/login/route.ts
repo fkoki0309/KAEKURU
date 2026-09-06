@@ -1,8 +1,7 @@
 import { NextResponse } from 'next/server'
 import * as mockDb from '../../../../lib/mockDb'
+import { SESSION_COOKIE, SESSION_MAX_AGE } from '../../../../lib/session'
 
-const SESSION_COOKIE = 'kaekuru_session'
-const SESSION_MAX_AGE = 60 * 60 * 24 * 7 // 7 days
 const DEMO_OWNER_ID = 'owner-demo'
 
 export async function POST(request: Request) {

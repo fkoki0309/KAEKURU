@@ -1,6 +1,6 @@
 "use client"
 import React, { useState } from 'react'
-import BrandMark from '../../../_components/BrandMark'
+import Screen from '../../../_components/Screen'
 
 export default function LinkFinderPage({ params }: { params: { rcId: string } }) {
   const rcId = params.rcId
@@ -23,10 +23,7 @@ export default function LinkFinderPage({ params }: { params: { rcId: string } })
   }
 
   return (
-    <div className="container card stack">
-      <BrandMark height={32} />
-      <h1 className="page-title" style={{ margin: 0 }}>後から紐付け（拾得者）</h1>
-
+    <Screen brand title="後から紐付け（拾得者）">
       <form onSubmit={submit} className="stack-sm">
         <div className="field">
           <label>お名前（任意）</label>
@@ -46,6 +43,6 @@ export default function LinkFinderPage({ params }: { params: { rcId: string } })
       </form>
 
       {msg && <p className="result">{msg}</p>}
-    </div>
+    </Screen>
   )
 }

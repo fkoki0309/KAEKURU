@@ -1,5 +1,6 @@
 "use client"
 import React, { useState, useEffect } from 'react'
+import Screen from '../../../_components/Screen'
 
 export default function OwnerPickupPointsPage({ params }: { params: { ownerId: string } }) {
   const ownerId = params.ownerId
@@ -51,9 +52,7 @@ export default function OwnerPickupPointsPage({ params }: { params: { ownerId: s
   }
 
   return (
-    <div className="container card stack">
-      <h1 className="page-title">受取拠点の登録</h1>
-
+    <Screen title="受取拠点の登録">
       <form onSubmit={handleSubmit} className="stack-sm">
         <div className="field">
           <label>キャリア</label>
@@ -114,6 +113,6 @@ export default function OwnerPickupPointsPage({ params }: { params: { ownerId: s
           </ul>
         )}
       </div>
-    </div>
+    </Screen>
   )
 }

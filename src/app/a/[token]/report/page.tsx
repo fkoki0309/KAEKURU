@@ -1,8 +1,8 @@
 "use client"
 import React, { useState } from 'react'
 import { useParams, useSearchParams } from 'next/navigation'
+import Screen from '../../../_components/Screen'
 import TagStatusCard from '../../../_components/TagStatusCard'
-import BrandMark from '../../../_components/BrandMark'
 import { useTag } from '../useTag'
 import MethodChooser from './_parts/MethodChooser'
 import DropoffFields from './_parts/DropoffFields'
@@ -59,16 +59,10 @@ export default function ReportPage() {
     }
   }
 
-  if (!token) return <div className="container card">トークンが指定されていません</div>
+  if (!token) return <Screen brand title="届け出">トークンが指定されていません</Screen>
 
   return (
-    <div className="container card stack">
-      <BrandMark height={32} />
-      <div className="row">
-        <a href={`/a/${token}`} className="button ghost">← 戻る</a>
-        <h1 className="page-title" style={{ margin: 0 }}>届け出</h1>
-      </div>
-
+    <Screen brand back={`/a/${token}`} title="届け出">
       {tag.status === 'loading' && <p className="muted">読み込み中…</p>}
       {tag.status === 'unactivated' && <TagStatusCard status="unactivated" />}
       {tag.status === 'error' && (
@@ -112,6 +106,6 @@ export default function ReportPage() {
           </section>
         </>
       )}
-    </div>
+    </Screen>
   )
 }

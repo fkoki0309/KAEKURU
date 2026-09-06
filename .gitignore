@@ -5,3 +5,12 @@ node_modules/
 dist/
 /.idea
 /.vscode
+
+# runtime mock DB state (regenerated on each dev run)
+tmp/
+
+# build info
+*.tsbuildinfo
+
+# local scratch (e.g. the favicon source image)
+/favicon-src.*

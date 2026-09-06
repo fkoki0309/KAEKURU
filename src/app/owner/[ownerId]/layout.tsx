@@ -1,9 +1,6 @@
-import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
-import { getOwnerBySession } from '../../../lib/mockDb'
+import { currentOwner } from '../../../lib/session'
 import OwnerNav from './OwnerNav'
-
-const SESSION_COOKIE = 'kaekuru_session'
 
 export default function OwnerLayout({
   children,
@@ -12,8 +9,7 @@ export default function OwnerLayout({
   children: React.ReactNode
   params: { ownerId: string }
 }) {
-  const token = cookies().get(SESSION_COOKIE)?.value
-  const owner = getOwnerBySession(token)
+  const owner = currentOwner()
 
   // Not logged in -> send to the login screen.
   if (!owner) redirect('/owner/login')
