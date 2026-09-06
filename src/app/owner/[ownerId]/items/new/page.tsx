@@ -8,8 +8,9 @@ export default function RegisterItemPage() {
   const router = useRouter()
   const search = useSearchParams()
   const isFirst = search?.get('first') === '1' // ダッシュボードから誘導された初回登録
+  const scannedToken = search?.get('token') ?? '' // QR から引き継がれたトークン
 
-  const [token, setToken] = useState(search?.get('token') ?? '')
+  const [token, setToken] = useState(scannedToken)
   const [itemName, setItemName] = useState('')
   const [photoUrl, setPhotoUrl] = useState<string | null>(null)
   const [uploading, setUploading] = useState(false)
@@ -121,7 +122,9 @@ export default function RegisterItemPage() {
             onChange={(e) => setToken(e.target.value)}
             placeholder="シールのQRを読み取ると自動で入ります"
           />
-          <span className="small-muted">例: demo-token-123</span>
+          <span className="small-muted">
+            {scannedToken ? 'QRから読み取りました（必要なら修正できます）' : '例: demo-token-123'}
+          </span>
         </div>
 
         <div className="field">

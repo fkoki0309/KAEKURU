@@ -1,9 +1,12 @@
 'use client'
 import React, { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 
 export default function OwnerLoginPage() {
   const router = useRouter()
+  const search = useSearchParams()
+  // Carried over when the owner scanned an unregistered tag's QR.
+  const scannedToken = search?.get('token') ?? null
   const [email, setEmail] = useState('test')
   const [password, setPassword] = useState('test')
   const [loading, setLoading] = useState(false)
@@ -24,7 +27,10 @@ export default function OwnerLoginPage() {
         setError(j.error || 'ログインに失敗しました')
         return
       }
-      router.push(`/owner/${j.owner.id}`)
+      const dest = scannedToken
+        ? `/owner/${j.owner.id}/items/new?token=${encodeURIComponent(scannedToken)}`
+        : `/owner/${j.owner.id}`
+      router.push(dest)
       router.refresh()
     } catch {
       setError('通信エラーが発生しました')
@@ -40,6 +46,11 @@ export default function OwnerLoginPage() {
         <p className="small-muted" style={{ margin: 0 }}>
           モック環境です。<code>test</code> / <code>test</code> でログインできます。
         </p>
+        {scannedToken && (
+          <p className="small-muted" style={{ margin: 0 }}>
+            ログイン後、読み取ったQR（<code>{scannedToken}</code>）の登録に進みます。
+          </p>
+        )}
       </div>
 
       <form onSubmit={onSubmit} className="stack-sm">
