@@ -56,8 +56,8 @@ export default function LinkFinderPage({ params }: { params: { rcId: string } })
   return (
     <Screen brand title="受け取り先の登録">
       <p className="small-muted" style={{ margin: 0 }}>
-        お名前と受け取り方法を登録すると、持ち主からのお礼（¥1,000）を受け取れます。
-        登録しなくても届け出は完了しています。
+        お名前と受け取り方法を登録すると、持ち主が直接お礼（¥1,000）をお送りします。
+        当サービスは送金を代行しません。登録しなくても届け出は完了しています。
       </p>
 
       <form onSubmit={submit} className="stack-sm">

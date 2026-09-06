@@ -95,8 +95,8 @@ export default function OwnerNotificationsPage() {
                   <div className="small-muted">
                     受け取りを確認しました。
                     {confirmed[n.return_case_id].hasReward
-                      ? ' 報酬 ¥1,000 を用意しました（「報酬」ページで送金）。'
-                      : ' 拾得者が匿名のため報酬はありません。'}
+                      ? ' お礼の送り先が登録されています。「お礼」ページから持ち主が直接お送りください（当サービスは送金を代行しません）。'
+                      : ' 拾得者が匿名のためお礼はありません。'}
                   </div>
                 ) : (
                   <div className="row">

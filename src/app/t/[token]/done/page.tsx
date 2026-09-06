@@ -36,9 +36,10 @@ export default function ReportDonePage() {
       )}
 
       <div className="stack-sm">
-        <strong className="section-title" style={{ margin: 0 }}>報酬を受け取る場合</strong>
+        <strong className="section-title" style={{ margin: 0 }}>お礼を受け取る場合</strong>
         <p className="small-muted" style={{ margin: 0 }}>
-          受け取り先（お名前・受け取り方法）を登録すると、持ち主からのお礼（¥1,000）を受け取れます。登録しなくても届け出は完了しています。
+          受け取り先（お名前・受け取り方法）を登録すると、持ち主が直接お礼（¥1,000）をお送りします。
+          お礼は任意の謝礼です（遺失物法の報労金とは別のもの）。登録しなくても届け出は完了しています。
         </p>
         {rc && (
           <Link href={`/return-cases/${rc}/link`} className="button primary block">

@@ -37,7 +37,7 @@ export default function HomePage() {
           <div className={styles.path}>
             <div className={styles.pathLabel}>持ち主の方</div>
             <p className={styles.pathText}>
-              シールを登録し、落とし物の通知を受け取ります。受け取り確認とお礼の送金まで。
+              シールを登録し、落とし物の通知を受け取ります。受け取り確認とお礼の受け渡しまで。
             </p>
             {ownerId ? (
               <Link href={`/owner/${ownerId}`} className={styles.cta}>
@@ -90,7 +90,7 @@ export default function HomePage() {
           </li>
           <li className={styles.step}>
             <span className={styles.stepNum}>05</span>
-            <span>受け取り確認をすると、相手がログイン済みならお礼が送られる</span>
+            <span>受け取り確認をすると、登録済みの送り先へ持ち主が直接お礼を送れる</span>
           </li>
         </ol>
 
