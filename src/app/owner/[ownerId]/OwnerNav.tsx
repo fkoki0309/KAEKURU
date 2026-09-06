@@ -15,6 +15,7 @@ export default function OwnerNav({ ownerId, itemName }: { ownerId: string; itemN
     <header className="app-header">
       <span className="small-muted">ログイン中{itemName ? `: ${itemName}` : ''}</span>
       <nav>
+        <a href={`/owner/${ownerId}`}>マイページ</a>
         <a href={`/owner/${ownerId}/notifications`}>通知</a>
         <a href={`/owner/${ownerId}/pickup-points`}>受取拠点</a>
         <a href={`/owner/${ownerId}/rewards`}>報酬</a>

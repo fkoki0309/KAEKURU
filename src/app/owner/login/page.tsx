@@ -24,7 +24,7 @@ export default function OwnerLoginPage() {
         setError(j.error || 'ログインに失敗しました')
         return
       }
-      router.push(`/owner/${j.owner.id}/notifications`)
+      router.push(`/owner/${j.owner.id}`)
       router.refresh()
     } catch {
       setError('通信エラーが発生しました')
