@@ -43,9 +43,6 @@ export default function OwnerLoginPage() {
     <div className="container card stack" style={{ maxWidth: 420 }}>
       <div className="stack-sm">
         <h1 className="page-title" style={{ margin: 0 }}>持ち主ログイン</h1>
-        <p className="small-muted" style={{ margin: 0 }}>
-          モック環境です。<code>test</code> / <code>test</code> でログインできます。
-        </p>
         {scannedToken && (
           <p className="small-muted" style={{ margin: 0 }}>
             ログイン後、読み取ったQR（<code>{scannedToken}</code>）の登録に進みます。
