@@ -16,6 +16,8 @@
     ├── token-security.md  # QRトークン設計・セキュリティ
     ├── api.md             # APIエンドポイント一覧
     ├── anonymous-mail.md  # 匿名お届け先(局留め)の実装
+    ├── legal-risks.md     # 法的リスクの調査(遺失物法・資金決済法 ほか)
+    ├── payout-options.md  # 送金スキームの選択肢(当事者間直接 / ギフトAPI ほか)
     ├── open-issues.md     # 未解決の論点
     └── tech-stack.md      # 技術選定(Next.js, Supabase等)
 ```
