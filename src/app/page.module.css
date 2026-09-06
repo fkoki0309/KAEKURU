@@ -1,0 +1,265 @@
+.page {
+  --ink: #1a1a1a;
+  --muted: #6b6b66;
+  --line: #e3e0da;
+  --paper: #faf9f7;
+  --accent: #2b50d6;
+
+  min-height: 100vh;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: ui-sans-serif, system-ui, -apple-system, "Hiragino Kaku Gothic ProN", "Yu Gothic", Meiryo, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+.topRule {
+  height: 3px;
+  background: var(--ink);
+}
+
+.wrap {
+  max-width: 620px;
+  margin: 0 auto;
+  padding: 0 24px 72px;
+}
+
+.wordmark {
+  display: inline-block;
+  margin: 40px 0 0;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.hero {
+  margin: 44px 0 0;
+  font-family: Georgia, "Hiragino Mincho ProN", "Yu Mincho", "YuMincho", serif;
+  font-weight: 500;
+  font-size: clamp(30px, 7.4vw, 46px);
+  line-height: 1.18;
+  letter-spacing: -0.01em;
+}
+
+.lede {
+  margin: 20px 0 0;
+  max-width: 42ch;
+  font-size: 16px;
+  line-height: 1.75;
+  color: var(--muted);
+}
+
+/* two paths */
+.paths {
+  margin: 48px 0 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  overflow: hidden;
+  background: #fff;
+}
+.path {
+  padding: 24px 22px;
+}
+.path + .path {
+  border-left: 1px solid var(--line);
+}
+.pathLabel {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  color: var(--muted);
+}
+.pathText {
+  margin: 12px 0 20px;
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--ink);
+}
+
+.cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 18px;
+  background: var(--ink);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-size: 14px;
+  font-family: inherit;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background 0.15s ease;
+}
+.cta:hover {
+  background: #000;
+}
+.cta:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.codeForm {
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.codeInput {
+  flex: 1 1 150px;
+  width: auto;
+  min-width: 0;
+  padding: 7px 2px;
+  border: none;
+  border-bottom: 1.5px solid #cfccc6;
+  border-radius: 0;
+  background: transparent;
+  color: var(--ink);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 14px;
+  outline: none;
+}
+.codeInput:focus {
+  border-bottom-color: var(--accent);
+}
+
+/* how it works */
+.stepsHead {
+  margin: 64px 0 4px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  color: var(--muted);
+}
+.steps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--line);
+}
+.step {
+  display: grid;
+  grid-template-columns: 40px 1fr;
+  gap: 14px;
+  align-items: baseline;
+  padding: 16px 2px;
+  border-bottom: 1px solid var(--line);
+  font-size: 15px;
+  line-height: 1.55;
+}
+.stepNum {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 13px;
+  color: var(--accent);
+}
+
+.footer {
+  margin: 56px 0 0;
+  padding-top: 20px;
+  border-top: 1px solid var(--line);
+  font-size: 12px;
+  color: var(--muted);
+}
+.footer code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+/* tablet / small laptop: keep the two columns but ease the spacing */
+@media (max-width: 760px) {
+  .wrap {
+    padding: 0 22px 68px;
+  }
+  .hero {
+    margin-top: 36px;
+  }
+  .paths {
+    margin-top: 40px;
+  }
+}
+
+/* phones: stack the two paths, stack the code form */
+@media (max-width: 620px) {
+  .wrap {
+    padding: 0 20px 60px;
+  }
+  .paths {
+    grid-template-columns: 1fr;
+  }
+  .path + .path {
+    border-left: none;
+    border-top: 1px solid var(--line);
+  }
+  .codeForm {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
+  }
+  .codeInput {
+    flex: 0 0 auto;
+  }
+  .codeForm .cta {
+    justify-content: center;
+  }
+}
+
+/* small phones: tighten type and rhythm */
+@media (max-width: 400px) {
+  .wrap {
+    padding: 0 16px 52px;
+  }
+  .wordmark {
+    margin-top: 32px;
+  }
+  .hero {
+    margin-top: 28px;
+    font-size: 27px;
+    line-height: 1.22;
+  }
+  .lede {
+    margin-top: 16px;
+    font-size: 15px;
+  }
+  .paths {
+    margin-top: 32px;
+    border-radius: 12px;
+  }
+  .path {
+    padding: 20px 18px;
+  }
+  .stepsHead {
+    margin-top: 48px;
+  }
+  .step {
+    grid-template-columns: 30px 1fr;
+    gap: 12px;
+    padding: 15px 0;
+    font-size: 14px;
+  }
+  .footer {
+    margin-top: 44px;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  .page {
+    --ink: #ece9e3;
+    --muted: #9a968d;
+    --line: #34322d;
+    --paper: #171614;
+    --accent: #8aa2ff;
+  }
+  .paths,
+  .path + .path {
+    background: #1e1d1a;
+  }
+  .cta {
+    background: var(--ink);
+    color: #171614;
+  }
+  .cta:hover {
+    background: #fff;
+  }
+}
