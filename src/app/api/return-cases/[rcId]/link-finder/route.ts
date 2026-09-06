@@ -13,7 +13,7 @@ export async function POST(request: Request, { params }: { params: { rcId: strin
       const res = mockDb.linkFinderToReturnCase(rcId, finder)
       if (res.status === 404) return NextResponse.json({ error: 'not found' }, { status: 404 })
       if (res.status === 409) return NextResponse.json({ error: 'already linked', return_case: res.return_case }, { status: 409 })
-      return NextResponse.json({ ok: true, return_case: res.return_case })
+      return NextResponse.json({ ok: true, return_case: res.return_case, reward: (res as { reward?: unknown }).reward ?? null })
     }
 
     if (!prisma) return NextResponse.json({ error: 'Prisma client not initialized.' }, { status: 500 })

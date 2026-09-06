@@ -10,7 +10,7 @@ export async function POST(request: Request, { params }: { params: { rcId: strin
     if (!process.env.DATABASE_URL) {
       const res = mockDb.markReturnCaseReceived(rcId)
       if (res.status === 404) return NextResponse.json({ error: 'not found' }, { status: 404 })
-      return NextResponse.json({ ok: true, return_case: res.return_case })
+      return NextResponse.json({ ok: true, return_case: res.return_case, reward: res.reward ?? null })
     }
 
     if (!prisma) return NextResponse.json({ error: 'Prisma client not initialized.' }, { status: 500 })
