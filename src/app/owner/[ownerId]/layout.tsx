@@ -18,8 +18,8 @@ export default function OwnerLayout({
   // Not logged in -> send to the login screen.
   if (!owner) redirect('/owner/login')
 
-  // Logged in as someone else -> bounce to your own pages.
-  if (owner.id !== params.ownerId) redirect(`/owner/${owner.id}/notifications`)
+  // Logged in as someone else -> bounce to your own dashboard.
+  if (owner.id !== params.ownerId) redirect(`/owner/${owner.id}`)
 
   return (
     <div>
