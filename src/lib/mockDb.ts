@@ -89,7 +89,6 @@ export function seedTag(token: string, status: Tag['status'] = 'unactivated') {
   const id = `mock-${Math.random().toString(36).slice(2, 10)}`
   const t: Tag = { id, token, status }
   tags.set(token, t)
-      saveMockFile()
   saveMockFile()
   return t
 }
@@ -172,16 +171,24 @@ export function runExpiryAlerts() {
   return alerted
 }
 
-export function activateTag(token: string, userId: string, item_name?: string) {
+export function activateTag(token: string, userId: string, item_name?: string, ownerIdToLink?: string | null) {
   const t = tags.get(token)
   if (!t) return { status: 404 }
   if (t.status !== 'unactivated') return { status: 409 }
   t.status = 'active'
-  const ownerId = `owner-${Math.random().toString(36).slice(2, 10)}`
-  const o: Owner = { id: ownerId, tag_id: t.id, item_name }
-  owners.set(ownerId, o)
+
+  // Prefer linking to the logged-in owner so the owner can see the resulting
+  // notifications in the UI. Fall back to a fresh owner when unauthenticated.
+  let o = ownerIdToLink ? owners.get(ownerIdToLink) : undefined
+  if (o) {
+    o.tag_id = t.id
+    if (item_name) o.item_name = item_name
+  } else {
+    o = { id: `owner-${Math.random().toString(36).slice(2, 10)}`, tag_id: t.id, item_name }
+  }
+  owners.set(o.id, o)
   // map token -> owner for cross-instance lookup
-  _globalStore.tokenToOwner.set(token, ownerId)
+  _globalStore.tokenToOwner.set(token, o.id)
   saveMockFile()
   return { status: 200, tag: t, owner: o }
 }
@@ -312,6 +319,16 @@ export function getReturnCaseById(id: string) {
   return returnCases.get(id) ?? null
 }
 
+export function markReturnCaseReceived(id: string) {
+  const rc = returnCases.get(id)
+  if (!rc) return { status: 404 as const }
+  rc.status = 'received'
+  rc.received_at = new Date().toISOString()
+  returnCases.set(id, rc)
+  saveMockFile()
+  return { status: 200 as const, return_case: rc }
+}
+
 export function createNotificationForOwner(ownerId: string, payload: any) {
   const note = { id: `nt-${Math.random().toString(36).slice(2,10)}`, owner_id: ownerId, ...payload, read: false, created_at: new Date().toISOString() }
   const arr = notifications.get(ownerId) ?? []
@@ -374,8 +391,10 @@ export function deleteSession(token: string | null | undefined) {
   if (sessions.delete(token)) saveMockFile()
 }
 
-// seed a demo tag on module load for convenience
+// Seed the demo tags once, only when they are not already present. Seeding
+// unconditionally here would overwrite tags every time a route module re-imports
+// this file (Next dev), wiping any activation that happened at runtime.
 if (!process.env.DATABASE_URL) {
-  seedTag('demo-token-123', 'unactivated')
-  seedTag('demo-token-activated', 'active')
+  if (!tags.has('demo-token-123')) seedTag('demo-token-123', 'unactivated')
+  if (!tags.has('demo-token-activated')) seedTag('demo-token-activated', 'active')
 }

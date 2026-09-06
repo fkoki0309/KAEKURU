@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
-import * as mockDb from '../../../../lib/mockDb'
-import { prisma } from '../../../../lib/prisma'
+import * as mockDb from '../../../../../lib/mockDb'
+import { prisma } from '../../../../../lib/prisma'
 
 export async function POST(request: Request, { params }: { params: { rewardId: string } }) {
   try {

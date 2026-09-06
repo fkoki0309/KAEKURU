@@ -8,13 +8,9 @@ export async function POST(request: Request, { params }: { params: { rcId: strin
     if (!rcId) return NextResponse.json({ error: 'rcId required' }, { status: 400 })
 
     if (!process.env.DATABASE_URL) {
-      const rc = mockDb.getReturnCaseById(rcId)
-      if (!rc) return NextResponse.json({ error: 'not found' }, { status: 404 })
-      rc.status = 'received'
-      rc.received_at = new Date().toISOString()
-      // persist
-      ;(mockDb as any).saveMockFile?.()
-      return NextResponse.json({ ok: true, return_case: rc })
+      const res = mockDb.markReturnCaseReceived(rcId)
+      if (res.status === 404) return NextResponse.json({ error: 'not found' }, { status: 404 })
+      return NextResponse.json({ ok: true, return_case: res.return_case })
     }
 
     if (!prisma) return NextResponse.json({ error: 'Prisma client not initialized.' }, { status: 500 })

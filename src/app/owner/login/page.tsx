@@ -1,5 +1,5 @@
 'use client'
-import { useState } from 'react'
+import React, { useState } from 'react'
 import { useRouter } from 'next/navigation'
 
 export default function OwnerLoginPage() {
@@ -24,7 +24,7 @@ export default function OwnerLoginPage() {
         setError(j.error || 'ログインに失敗しました')
         return
       }
-      router.push(`/owner/${j.owner.id}/notifications`)
+      router.push(`/owner/${j.owner.id}`)
       router.refresh()
     } catch {
       setError('通信エラーが発生しました')
@@ -34,40 +34,34 @@ export default function OwnerLoginPage() {
   }
 
   return (
-    <div style={{ maxWidth: 420, margin: '64px auto', padding: 24, fontFamily: 'system-ui' }}>
-      <h1 style={{ fontSize: 20, marginBottom: 4 }}>持ち主ログイン</h1>
-      <p style={{ fontSize: 13, color: '#666', marginTop: 0 }}>
-        モック環境です。<code>test</code> / <code>test</code> でログインできます。
-      </p>
-      <form onSubmit={onSubmit}>
-        <label style={{ display: 'block', marginBottom: 12 }}>
-          <span style={{ fontSize: 13 }}>メール</span>
-          <input
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            autoComplete="username"
-            style={{ width: '100%', padding: 8, marginTop: 4, boxSizing: 'border-box' }}
-          />
-        </label>
-        <label style={{ display: 'block', marginBottom: 16 }}>
-          <span style={{ fontSize: 13 }}>パスワード</span>
+    <div className="container card stack" style={{ maxWidth: 420 }}>
+      <div className="stack-sm">
+        <h1 className="page-title" style={{ margin: 0 }}>持ち主ログイン</h1>
+        <p className="small-muted" style={{ margin: 0 }}>
+          モック環境です。<code>test</code> / <code>test</code> でログインできます。
+        </p>
+      </div>
+
+      <form onSubmit={onSubmit} className="stack-sm">
+        <div className="field">
+          <label>メール</label>
+          <input value={email} onChange={(e) => setEmail(e.target.value)} autoComplete="username" />
+        </div>
+        <div className="field">
+          <label>パスワード</label>
           <input
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             autoComplete="current-password"
-            style={{ width: '100%', padding: 8, marginTop: 4, boxSizing: 'border-box' }}
           />
-        </label>
-        <button
-          type="submit"
-          disabled={loading}
-          style={{ width: '100%', padding: 10, cursor: loading ? 'default' : 'pointer' }}
-        >
+        </div>
+        <button type="submit" className="button primary block" disabled={loading}>
           {loading ? 'ログイン中…' : 'ログイン'}
         </button>
       </form>
-      {error && <p style={{ color: '#c00', marginTop: 12, fontSize: 14 }}>{error}</p>}
+
+      {error && <p className="error-text" style={{ margin: 0 }}>{error}</p>}
     </div>
   )
 }

@@ -1,7 +1,10 @@
 import { NextResponse } from 'next/server'
+import { cookies } from 'next/headers'
 // NOTE: This is a sample implementation. Adapt to your auth and DB setup.
 import { prisma } from '../../../../lib/prisma' // assume prisma client is exposed
 import * as mockDb from '../../../../lib/mockDb'
+
+const SESSION_COOKIE = 'kaekuru_session'
 
 export async function POST(request: Request) {
   try {
@@ -20,7 +23,8 @@ export async function POST(request: Request) {
 
     // If DATABASE_URL is not set, use in-memory mock DB for local dev
     if (!process.env.DATABASE_URL) {
-      const res = mockDb.activateTag(token, userId, item_name)
+      const sessionOwner = mockDb.getOwnerBySession(cookies().get(SESSION_COOKIE)?.value)
+      const res = mockDb.activateTag(token, userId, item_name, sessionOwner?.id ?? null)
       if (res.status === 404) return NextResponse.json({ error: 'not found' }, { status: 404 })
       if (res.status === 409) return NextResponse.json({ error: 'already activated' }, { status: 409 })
       return NextResponse.json({ ok: true, tag: res.tag, owner: res.owner })
@@ -32,7 +36,7 @@ export async function POST(request: Request) {
     }
 
     // Transaction: check tag status and create owner relation atomically
-    const result = await prisma.$transaction(async (tx) => {
+    const result = await prisma.$transaction(async (tx: any) => {
       const tag = await tx.tags.findUnique({ where: { token } })
       if (!tag) return { status: 404 }
       if (tag.status !== 'unactivated') return { status: 409 }
