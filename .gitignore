@@ -14,3 +14,7 @@ tmp/
 
 # local scratch (e.g. the favicon source image)
 /favicon-src.*
+
+# runtime finder photo uploads
+public/uploads/*
+!public/uploads/.gitkeep
