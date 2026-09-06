@@ -312,11 +312,30 @@ export function createReturnCase({ token, method, dropoff_location, finder_photo
     }
   }
   if (owner) {
+    const itemName = owner.item_name ?? '持ち物'
+    const pickupName = pickup_point_id ? getPickupPointById(pickup_point_id)?.facility_name ?? null : null
+    const where =
+      method === 'mail'
+        ? pickupName
+          ? `郵送（${pickupName} 留め）`
+          : '郵送'
+        : dropoff_location
+          ? `手渡し（${dropoff_location}）`
+          : '手渡し'
+
     const note = {
-      id: `nt-${Math.random().toString(36).slice(2,10)}`,
+      id: `nt-${Math.random().toString(36).slice(2, 10)}`,
       owner_id: owner.id,
       return_case_id: id,
-      message: `Your item (${owner.item_name ?? '不明'}) was reported found (case ${case_code}).`,
+      type: 'found' as const,
+      item_name: owner.item_name ?? null,
+      case_code,
+      method,
+      dropoff_location: dropoff_location ?? null,
+      pickup_point_name: pickupName,
+      finder_memo: finder_memo ?? null,
+      finder_photo_url: finder_photo_url ?? null,
+      message: `「${itemName}」の落とし物が届け出られました。届け方: ${where}。受付番号 ${case_code}`,
       read: false,
       created_at: new Date().toISOString(),
     }

@@ -1,6 +1,6 @@
 "use client"
 import React, { useState } from 'react'
-import { useParams, useSearchParams } from 'next/navigation'
+import { useParams, useRouter, useSearchParams } from 'next/navigation'
 import Screen from '../../../_components/Screen'
 import TagStatusCard from '../../../_components/TagStatusCard'
 import { useTag } from '../useTag'
@@ -14,6 +14,7 @@ type Method = 'choose' | 'dropoff' | 'mail'
 export default function ReportPage() {
   const params = useParams() as { token?: string }
   const token = params?.token
+  const router = useRouter()
   const search = useSearchParams()
   const methodParam = search?.get('method') as 'dropoff' | 'mail' | null
 
@@ -49,8 +50,17 @@ export default function ReportPage() {
         body: JSON.stringify(payload),
       })
       const body = await res.json()
-      if (!res.ok) setResultMessage(`送信失敗: ${body.error || res.status}`)
-      else setResultMessage(`送信完了: ${body.return_case.case_code || body.return_case.id}`)
+      if (!res.ok) {
+        setResultMessage(`送信失敗: ${body.error || res.status}`)
+        return
+      }
+      const rc = body.return_case
+      const q = new URLSearchParams({
+        code: rc.case_code ?? rc.id,
+        rc: rc.id,
+        method: method === 'mail' ? 'mail' : 'dropoff',
+      })
+      router.push(`/a/${token}/done?${q.toString()}`)
     } catch (err) {
       console.error(err)
       setResultMessage('送信中にエラーが発生しました')
