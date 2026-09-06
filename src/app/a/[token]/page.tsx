@@ -1,5 +1,5 @@
 "use client"
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
 import TagStatusCard from '../../_components/TagStatusCard'
 import { useTag } from './useTag'
@@ -9,7 +9,25 @@ export default function TokenPage() {
   const token = params?.token
   const tag = useTag(token)
 
+  // undefined = still checking, null = not logged in, string = owner id
+  const [ownerId, setOwnerId] = useState<string | null | undefined>(undefined)
+  useEffect(() => {
+    let cancelled = false
+    fetch('/api/auth/me')
+      .then((r) => (r.ok ? r.json() : null))
+      .then((j) => !cancelled && setOwnerId(j?.owner?.id ?? null))
+      .catch(() => !cancelled && setOwnerId(null))
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
   if (!token) return <div className="container card">トークンが指定されていません</div>
+
+  const registerHref =
+    ownerId
+      ? `/owner/${ownerId}/items/new?token=${encodeURIComponent(token)}`
+      : `/owner/login?token=${encodeURIComponent(token)}`
 
   return (
     <div className="container card stack">
@@ -21,10 +39,14 @@ export default function TokenPage() {
         <div className="stack">
           <TagStatusCard status="unactivated" />
           <p className="small-muted" style={{ margin: 0 }}>
-            持ち主の方はログインしてタグを登録してください。
+            {ownerId
+              ? 'この持ち物の持ち主なら、そのまま登録できます。読み取ったトークンは登録画面に引き継がれます。'
+              : 'この持ち物の持ち主の方はログインして登録してください。読み取ったトークンは登録画面に引き継がれます。'}
           </p>
           <div className="row">
-            <a href="/owner/login" className="button primary">持ち主としてログイン</a>
+            <a href={registerHref} className="button primary lg">
+              {ownerId ? 'この持ち物を登録する' : '持ち主としてログインして登録'}
+            </a>
           </div>
         </div>
       )}
