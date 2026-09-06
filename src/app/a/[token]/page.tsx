@@ -1,36 +1,13 @@
 "use client"
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import { useParams } from 'next/navigation'
 import TagStatusCard from '../../_components/TagStatusCard'
-
-type TagState =
-  | { status: 'loading' }
-  | { status: 'unactivated' }
-  | { status: 'active'; item_name?: string }
-  | { status: 'error'; message?: string }
+import { useTag } from './useTag'
 
 export default function TokenPage() {
   const params = useParams() as { token?: string }
   const token = params?.token
-  const [state, setState] = useState<TagState>({ status: 'loading' })
-
-  useEffect(() => {
-    if (!token) return
-    setState({ status: 'loading' })
-    fetch(`/api/a/${token}`)
-      .then(async (res) => {
-        if (!res.ok) {
-          const body = await res.json().catch(() => ({}))
-          if (res.status === 404) return setState({ status: 'error', message: 'タグが見つかりません' })
-          return setState({ status: 'error', message: body.error || '不明なエラー' })
-        }
-        const body = await res.json()
-        if (body.status === 'unactivated') setState({ status: 'unactivated' })
-        else if (body.status === 'active') setState({ status: 'active', item_name: body.item_name })
-        else setState({ status: 'error', message: '不明なステータス' })
-      })
-      .catch(() => setState({ status: 'error', message: 'ネットワークエラー' }))
-  }, [token])
+  const tag = useTag(token)
 
   if (!token) return <div className="container card">トークンが指定されていません</div>
 
@@ -38,9 +15,9 @@ export default function TokenPage() {
     <div className="container card stack">
       <h1 className="page-title">QRタグ: {token}</h1>
 
-      {state.status === 'loading' && <p className="muted">読み込み中…</p>}
+      {tag.status === 'loading' && <p className="muted">読み込み中…</p>}
 
-      {state.status === 'unactivated' && (
+      {tag.status === 'unactivated' && (
         <div className="stack">
           <TagStatusCard status="unactivated" />
           <p className="small-muted" style={{ margin: 0 }}>
@@ -52,9 +29,9 @@ export default function TokenPage() {
         </div>
       )}
 
-      {state.status === 'active' && (
+      {tag.status === 'active' && (
         <div className="stack">
-          <TagStatusCard status="active" itemName={state.item_name} />
+          <TagStatusCard status="active" itemName={tag.itemName} />
           <p className="small-muted" style={{ margin: 0 }}>
             この持ち物を拾った方は、次の画面から届け出を行ってください。
           </p>
@@ -64,10 +41,10 @@ export default function TokenPage() {
         </div>
       )}
 
-      {state.status === 'error' && (
+      {tag.status === 'error' && (
         <div className="panel stack-sm">
           <strong>エラー</strong>
-          <p className="small-muted" style={{ margin: 0 }}>{state.message ?? 'エラーが発生しました'}</p>
+          <p className="small-muted" style={{ margin: 0 }}>{tag.message}</p>
         </div>
       )}
     </div>
