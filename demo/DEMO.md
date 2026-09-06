@@ -135,5 +135,3 @@ npx qrcode -o demo/qr-demo-token-123-lan.png "http://<新IP>:3000/t/demo-token-1
 ```
 
 URL 直打ちなら IP 部分を差し替えるだけ。
-
-URL 直打ちなら IP 部分を差し替えるだけ。
