@@ -12,7 +12,7 @@ export default function HomePage() {
   function goToTag(e: React.FormEvent) {
     e.preventDefault()
     const t = code.trim()
-    if (t) router.push(`/a/${encodeURIComponent(t)}`)
+    if (t) router.push(`/t/${encodeURIComponent(t)}`)
   }
 
   return (

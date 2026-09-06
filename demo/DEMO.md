@@ -6,8 +6,8 @@
 
 | ファイル | 中身 | 用途 |
 |---|---|---|
-| `qr-demo-token-123-lan.png` | `http://192.168.11.5:3000/a/demo-token-123` | スマホでスキャン |
-| `qr-demo-token-123-localhost.png` | `http://localhost:3000/a/demo-token-123` | 同じ Mac の QR リーダー / カメラ |
+| `qr-demo-token-123-lan.png` | `http://192.168.11.5:3000/t/demo-token-123` | スマホでスキャン |
+| `qr-demo-token-123-localhost.png` | `http://localhost:3000/t/demo-token-123` | 同じ Mac の QR リーダー / カメラ |
 | `qr-demo-token-activated-*.png` | 2個目の持ち物用（`demo-token-activated`） | 任意 |
 
 > **現状 3 か所だけ端末コマンドが要ります**（UI 未接続）。該当箇所に「▶ ターミナル」と明記しています。
@@ -43,7 +43,7 @@ DATABASE_URL= npx next dev -H 0.0.0.0 -p 3000
 
 ## 1.【拾得者】未登録タグをスキャン
 
-1. `qr-demo-token-123` をスキャン → `/a/demo-token-123` が開く
+1. `qr-demo-token-123` をスキャン → `/t/demo-token-123` が開く
 2. **「未登録」** と表示されて終了。持ち主情報も持ち物名も一切出ない ← 未登録タグの正しい挙動
 
 ---
@@ -147,5 +147,5 @@ rm -rf tmp .next
 
 ```bash
 IP=$(ipconfig getifaddr en0)
-npx qrcode -o qr.png "http://$IP:3000/a/demo-token-123" -w 600
+npx qrcode -o qr.png "http://$IP:3000/t/demo-token-123" -w 600
 ```

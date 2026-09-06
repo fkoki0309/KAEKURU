@@ -2,7 +2,7 @@
 
 | メソッド/パス | 用途 | 認証 |
 |---|---|---|
-| `GET /a/:token` | QRスキャン時のタグ状態確認・振り分け | 不要 |
+| `GET /t/:token` | QRスキャン時のタグ状態確認・振り分け | 不要 |
 | `POST /api/tags/activate` | 持ち主がタグと持ち物を紐付け | 必要 |
 | `POST /api/tags/:tagId/unlink` | 紐付け解除(譲渡・再利用) | 必要 |
 | `POST /api/owner-pickup-points` | 受取拠点の事前登録 | 必要 |
@@ -14,7 +14,7 @@
 
 ## エンドポイントの補足
 
-### `GET /a/:token`
+### `GET /t/:token`
 - タグが存在しない → 404
 - `status = unactivated` → 「まだ使われていません」を返す
 - `status = active` → フォーム画面用の情報(持ち物名など最低限)を返す

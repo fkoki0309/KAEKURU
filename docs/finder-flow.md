@@ -5,7 +5,7 @@
 ## フロー図
 
 ```
-QRスキャン → GET /a/:token
+QRスキャン → GET /t/:token
   ├─ 未登録(status=unactivated) → 「まだ使われていません」で終了
   └─ 登録済み(status=active)   → フォーム画面へ
 
@@ -40,7 +40,7 @@ QRスキャン → GET /a/:token
 
 ## 関連するAPI
 
-- `GET /a/:token` — QRスキャン時の状態確認
+- `GET /t/:token` — QRスキャン時の状態確認
 - `POST /api/return-cases` — フォーム送信
 - `POST /api/return-cases/:id/ship` — 郵送の発送完了報告
 - `POST /api/return-cases/:id/link-finder` — 後からのログイン紐付け

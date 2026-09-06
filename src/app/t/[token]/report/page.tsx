@@ -60,7 +60,7 @@ export default function ReportPage() {
         rc: rc.id,
         method: method === 'mail' ? 'mail' : 'dropoff',
       })
-      router.push(`/a/${token}/done?${q.toString()}`)
+      router.push(`/t/${token}/done?${q.toString()}`)
     } catch (err) {
       console.error(err)
       setResultMessage('送信中にエラーが発生しました')
@@ -72,7 +72,7 @@ export default function ReportPage() {
   if (!token) return <Screen brand title="届け出">トークンが指定されていません</Screen>
 
   return (
-    <Screen brand back={`/a/${token}`} title="届け出">
+    <Screen brand back={`/t/${token}`} title="届け出">
       {tag.status === 'loading' && <p className="muted">読み込み中…</p>}
       {tag.status === 'unactivated' && <TagStatusCard status="unactivated" />}
       {tag.status === 'error' && (
