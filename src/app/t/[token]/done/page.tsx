@@ -18,7 +18,7 @@ export default function ReportDonePage() {
 
       <div className="panel stack-sm">
         <span className="small-muted">受付番号</span>
-        <strong style={{ fontSize: 'clamp(20px, 6vw, 24px)', letterSpacing: '0.04em', wordBreak: 'break-all' }}>
+        <strong style={{ fontSize: 'clamp(20px, 6vw, 24px)', letterSpacing: '0.04em', marginRight: '-0.04em', overflowWrap: 'anywhere' }}>
           {code}
         </strong>
         <span className="small-muted">
