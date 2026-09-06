@@ -13,8 +13,10 @@ export async function POST(request: Request) {
       const owner = mockDb.getOwnerByTagId(tag.id)
       const pickupPoints = owner ? mockDb.listOwnerPickupPoints(owner.id) : []
       const first = (pickupPoints || [])[0] ?? null
-      const shipmentId = `label-${Date.now()}`
-      return NextResponse.json({ ok: true, shipment_id: shipmentId, pickup_point_id: first?.id ?? null, message: 'mock shipping label issued' })
+      // persist shipment in mock DB
+      const created = mockDb.createShipment({ token, pickup_point_id: first?.id ?? null })
+      if (created.status !== 200) return NextResponse.json({ error: 'failed to create shipment' }, { status: 500 })
+      return NextResponse.json({ ok: true, shipment_id: created.shipment.shipment_id, pickup_point_id: created.shipment.pickup_point_id ?? null, message: 'mock shipping label issued' })
     }
 
     return NextResponse.json({ error: 'Not implemented for real DB' }, { status: 501 })

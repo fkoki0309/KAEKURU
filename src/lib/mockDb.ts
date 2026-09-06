@@ -19,6 +19,7 @@ const _globalStore: any = (globalThis as any)[_GLOBAL_MOCK_KEY] || ((globalThis 
   pickupPoints: new Map<string, any>(),
   notifications: new Map<string, any[]>(),
   rewards: new Map<string, any>(),
+  shipments: new Map<string, any>(),
   tokenToOwner: new Map<string, string>(),
 })
 
@@ -28,6 +29,7 @@ const returnCases: Map<string, any> = _globalStore.returnCases
 const pickupPoints: Map<string, any> = _globalStore.pickupPoints
 const notifications: Map<string, any[]> = _globalStore.notifications
 const rewards: Map<string, any> = _globalStore.rewards
+const shipments: Map<string, any> = _globalStore.shipments
 
 // Persist mock state to a tmp JSON file so separate Next.js route modules
 // (dev mode) can share state reliably.
@@ -50,6 +52,7 @@ function loadMockFile() {
     for (const o of data.owners || []) owners.set(o.id, o)
     for (const rc of data.returnCases || []) returnCases.set(rc.id, rc)
     for (const pp of data.pickupPoints || []) pickupPoints.set(pp.id, pp)
+    for (const s of data.shipments || []) shipments.set(s.id, s)
     for (const [ownerId, arr] of (data.notifications || [])) notifications.set(ownerId, arr)
     for (const r of (data.rewards || [])) rewards.set(r.id, r)
     for (const [tok, ownerId] of (data.tokenToOwner || [])) _globalStore.tokenToOwner.set(tok, ownerId)
@@ -68,6 +71,7 @@ function saveMockFile() {
       pickupPoints: Array.from(pickupPoints.values()),
       notifications: Array.from(notifications.entries()),
       rewards: Array.from(rewards.values()),
+      shipments: Array.from(shipments.values()),
       tokenToOwner: Array.from((_globalStore.tokenToOwner || new Map()).entries()),
     }
     fs.writeFileSync(MOCK_DB_FILE, JSON.stringify(payload, null, 2), 'utf8')
@@ -280,6 +284,42 @@ export function listOwnerPickupPoints(ownerId: string) {
 export function getPickupPointById(id: string) {
   return pickupPoints.get(id) ?? null
 }
+
+// Shipments (mock label) management
+export function createShipment({ token, pickup_point_id = null, carrier = null, label = null }: any) {
+  const tag = tags.get(token)
+  if (!tag) return { status: 404 }
+  const owner = getOwnerByTagId(tag.id)
+  const id = `sh-${Math.random().toString(36).slice(2, 10)}`
+  const shipment_id = `label-${Date.now()}`
+  const sh = {
+    id,
+    shipment_id,
+    token,
+    tag_id: tag.id,
+    owner_id: owner?.id ?? null,
+    pickup_point_id: pickup_point_id ?? null,
+    carrier: carrier ?? null,
+    label: label ?? null,
+    created_at: new Date().toISOString(),
+  }
+  shipments.set(id, sh)
+  saveMockFile()
+  return { status: 200, shipment: sh }
+}
+
+export function listShipmentsForToken(token: string) {
+  const out: any[] = []
+  for (const s of shipments.values()) if (s.token === token) out.push(s)
+  return out
+}
+
+export function listShipmentsForOwner(ownerId: string) {
+  const out: any[] = []
+  for (const s of shipments.values()) if (s.owner_id === ownerId) out.push(s)
+  return out
+}
+
 
 // Helper list functions for debug endpoint
 export function listTags() {
