@@ -2,6 +2,7 @@
 import React, { useState } from 'react'
 import { useParams, useSearchParams } from 'next/navigation'
 import TagStatusCard from '../../../_components/TagStatusCard'
+import BrandMark from '../../../_components/BrandMark'
 import { useTag } from '../useTag'
 import MethodChooser from './_parts/MethodChooser'
 import DropoffFields from './_parts/DropoffFields'
@@ -62,6 +63,7 @@ export default function ReportPage() {
 
   return (
     <div className="container card stack">
+      <BrandMark height={32} />
       <div className="row">
         <a href={`/a/${token}`} className="button ghost">← 戻る</a>
         <h1 className="page-title" style={{ margin: 0 }}>届け出</h1>

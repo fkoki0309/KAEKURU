@@ -1,5 +1,6 @@
 "use client"
 import React, { useState } from 'react'
+import BrandMark from '../../../_components/BrandMark'
 
 export default function LinkFinderPage({ params }: { params: { rcId: string } }) {
   const rcId = params.rcId
@@ -23,7 +24,8 @@ export default function LinkFinderPage({ params }: { params: { rcId: string } })
 
   return (
     <div className="container card stack">
-      <h1 className="page-title">後から紐付け（拾得者）</h1>
+      <BrandMark height={32} />
+      <h1 className="page-title" style={{ margin: 0 }}>後から紐付け（拾得者）</h1>
 
       <form onSubmit={submit} className="stack-sm">
         <div className="field">

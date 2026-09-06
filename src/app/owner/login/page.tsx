@@ -1,6 +1,7 @@
 'use client'
 import React, { useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
+import BrandMark from '../../_components/BrandMark'
 
 export default function OwnerLoginPage() {
   const router = useRouter()
@@ -41,6 +42,7 @@ export default function OwnerLoginPage() {
 
   return (
     <div className="container card stack" style={{ maxWidth: 420 }}>
+      <BrandMark height={40} />
       <div className="stack-sm">
         <h1 className="page-title" style={{ margin: 0 }}>持ち主ログイン</h1>
         <p className="small-muted" style={{ margin: 0 }}>
