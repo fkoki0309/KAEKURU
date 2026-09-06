@@ -17,14 +17,14 @@ type LoadState =
 /**
  * Shows the anonymous 局留め destination for the token. The finder only ever
  * sees 局名・住所・受取人名 — this component fetches the finder-facing
- * GET /api/a/:token/shipping-destination endpoint, never owner-scoped APIs.
+ * GET /api/t/:token/shipping-destination endpoint, never owner-scoped APIs.
  */
 export default function MailDestination({ token, onBack }: { token: string; onBack: () => void }) {
   const [state, setState] = useState<LoadState>({ status: 'loading' })
 
   useEffect(() => {
     let cancelled = false
-    fetch(`/api/a/${token}/shipping-destination`)
+    fetch(`/api/t/${token}/shipping-destination`)
       .then(async (res) => {
         const body = await res.json().catch(() => ({}))
         if (cancelled) return

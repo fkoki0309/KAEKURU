@@ -20,7 +20,7 @@
 
 ```
 Next.js (TypeScript) on Vercel
- ├─ /app/a/[token]        拾得者向けページ(SSR、ログイン不要)
+ ├─ /app/t/[token]        拾得者向けページ(SSR、ログイン不要)
  ├─ /app/owner/...        持ち主向けダッシュボード(要認証)
  ├─ /app/api/...          APIルート(tags, return-cases, rewards 等)
  └─ Prisma

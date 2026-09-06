@@ -3,7 +3,7 @@
 ## トークンの生成
 
 - 連番は禁止。`crypto.randomBytes(16).toString('base64url')` 等、128bit以上の暗号学的乱数を使う
-- URL例: `https://app.example.com/a/7Kx9mP2vQnZ8wRtL4bYc6H`
+- URL例: `https://app.example.com/t/7Kx9mP2vQnZ8wRtL4bYc6H`
 - タグ(持ち物)単位でトークンを発行し、ユーザー単位のURLにはしない(1シール=1持ち物)。理由:
   - 拾得者が何を拾ったかシステム側で区別できる
   - 1点のシールが漏洩・コピーされても他の持ち物は無事

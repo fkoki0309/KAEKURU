@@ -45,7 +45,7 @@ export default function TokenPage() {
             この持ち物を拾った方は、次の画面から届け出を行ってください。
           </p>
           <div className="row">
-            <a href={`/a/${token}/report`} className="button primary lg">届け出る</a>
+            <a href={`/t/${token}/report`} className="button primary lg">届け出る</a>
           </div>
         </div>
       )}

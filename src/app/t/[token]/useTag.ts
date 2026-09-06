@@ -7,7 +7,7 @@ export type TagState =
   | { status: 'active'; itemName: string | null }
   | { status: 'error'; message: string }
 
-/** Fetches GET /api/a/:token and maps it to a discriminated TagState. */
+/** Fetches GET /api/t/:token and maps it to a discriminated TagState. */
 export function useTag(token: string | undefined): TagState {
   const [state, setState] = useState<TagState>({ status: 'loading' })
 
@@ -16,7 +16,7 @@ export function useTag(token: string | undefined): TagState {
     let cancelled = false
     setState({ status: 'loading' })
 
-    fetch(`/api/a/${token}`)
+    fetch(`/api/t/${token}`)
       .then(async (res) => {
         const body = await res.json().catch(() => ({}))
         if (cancelled) return
