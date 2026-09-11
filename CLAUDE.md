@@ -17,7 +17,8 @@
     ├── api.md             # APIエンドポイント一覧
     ├── anonymous-mail.md  # 匿名お届け先(局留め)の実装
     ├── open-issues.md     # 未解決の論点
-    └── tech-stack.md      # 技術選定(Next.js, Supabase等)
+    ├── tech-stack.md      # 技術選定(Next.js / Go / AWS)
+    └── aws-architecture.md # AWSインフラ設計(VPC・CDKスタック分割・コスト概算)
 ```
 
 ## 実装ルール
